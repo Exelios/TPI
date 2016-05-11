@@ -1,0 +1,9 @@
+F:\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\bin\Debug\WFA-TPI-dougoudxa-GatherAndDeployC-v1.exe.config
+F:\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\bin\Debug\WFA-TPI-dougoudxa-GatherAndDeployC-v1.exe
+F:\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\bin\Debug\WFA-TPI-dougoudxa-GatherAndDeployC-v1.pdb
+F:\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\obj\Debug\WFA-TPI-dougoudxa-GatherAndDeployC-v1.csprojResolveAssemblyReference.cache
+F:\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\obj\Debug\WFA_TPI_dougoudxa_GatherAndDeployC_v1.appForm.resources
+F:\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\obj\Debug\WFA_TPI_dougoudxa_GatherAndDeployC_v1.Properties.Resources.resources
+F:\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\obj\Debug\WFA-TPI-dougoudxa-GatherAndDeployC-v1.csproj.GenerateResource.Cache
+F:\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\obj\Debug\WFA-TPI-dougoudxa-GatherAndDeployC-v1.exe
+F:\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\obj\Debug\WFA-TPI-dougoudxa-GatherAndDeployC-v1.pdb
