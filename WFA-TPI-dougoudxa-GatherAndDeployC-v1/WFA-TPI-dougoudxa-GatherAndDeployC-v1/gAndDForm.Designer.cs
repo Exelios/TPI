@@ -43,7 +43,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.hostsListBox = new System.Windows.Forms.ListBox();
             this.analyseButton = new System.Windows.Forms.Button();
             this.synchroniseButton = new System.Windows.Forms.Button();
-            this.hostsLabel = new System.Windows.Forms.Label();
+            this.targetHostLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // sourcePathLabel
@@ -108,21 +108,21 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.synchroniseButton.Text = "Synchronise";
             this.synchroniseButton.UseVisualStyleBackColor = true;
             // 
-            // hostsLabel
+            // targetHostLabel
             // 
-            this.hostsLabel.AutoSize = true;
-            this.hostsLabel.Location = new System.Drawing.Point(72, 89);
-            this.hostsLabel.Name = "hostsLabel";
-            this.hostsLabel.Size = new System.Drawing.Size(37, 13);
-            this.hostsLabel.TabIndex = 7;
-            this.hostsLabel.Text = "Hosts:";
+            this.targetHostLabel.AutoSize = true;
+            this.targetHostLabel.Location = new System.Drawing.Point(45, 89);
+            this.targetHostLabel.Name = "targetHostLabel";
+            this.targetHostLabel.Size = new System.Drawing.Size(64, 13);
+            this.targetHostLabel.TabIndex = 7;
+            this.targetHostLabel.Text = "Target host:";
             // 
             // appForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(359, 458);
-            this.Controls.Add(this.hostsLabel);
+            this.Controls.Add(this.targetHostLabel);
             this.Controls.Add(this.synchroniseButton);
             this.Controls.Add(this.analyseButton);
             this.Controls.Add(this.hostsListBox);
@@ -149,7 +149,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         private System.Windows.Forms.ListBox hostsListBox;
         private System.Windows.Forms.Button analyseButton;
         private System.Windows.Forms.Button synchroniseButton;
-        private System.Windows.Forms.Label hostsLabel;
+        private System.Windows.Forms.Label targetHostLabel;
     }
 }
 

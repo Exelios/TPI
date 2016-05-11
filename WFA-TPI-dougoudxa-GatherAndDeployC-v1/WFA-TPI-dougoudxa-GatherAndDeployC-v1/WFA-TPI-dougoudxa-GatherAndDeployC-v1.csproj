@@ -49,19 +49,19 @@
     <Compile Include="Command.cs" />
     <Compile Include="Comparison.cs" />
     <Compile Include="Deploy.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="gAndDForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="gAndDForm.Designer.cs">
+      <DependentUpon>gAndDForm.cs</DependentUpon>
     </Compile>
     <Compile Include="NetworkConfig.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SourceHost.cs" />
     <Compile Include="TargetHost.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="gAndDForm.resx">
+      <DependentUpon>gAndDForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

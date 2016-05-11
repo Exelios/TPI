@@ -7,3 +7,4 @@ F:\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-
 F:\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\obj\Debug\WFA-TPI-dougoudxa-GatherAndDeployC-v1.csproj.GenerateResource.Cache
 F:\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\obj\Debug\WFA-TPI-dougoudxa-GatherAndDeployC-v1.exe
 F:\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\obj\Debug\WFA-TPI-dougoudxa-GatherAndDeployC-v1.pdb
+D:\GitHubRep\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\bin\Debug\WFA-TPI-dougoudxa-GatherAndDeployC-v1.exe.config
