@@ -40,10 +40,10 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.sourcePathTextBox = new System.Windows.Forms.TextBox();
             this.destinationPathLabel = new System.Windows.Forms.Label();
             this.destinationPathTextBox = new System.Windows.Forms.TextBox();
-            this.hostsListBox = new System.Windows.Forms.ListBox();
             this.analyseButton = new System.Windows.Forms.Button();
             this.synchroniseButton = new System.Windows.Forms.Button();
             this.targetHostLabel = new System.Windows.Forms.Label();
+            this.hostPanelContainer = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
             // sourcePathLabel
@@ -82,14 +82,6 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.destinationPathTextBox.TabIndex = 3;
             this.destinationPathTextBox.Text = "C:\\";
             // 
-            // hostsListBox
-            // 
-            this.hostsListBox.FormattingEnabled = true;
-            this.hostsListBox.Location = new System.Drawing.Point(115, 89);
-            this.hostsListBox.Name = "hostsListBox";
-            this.hostsListBox.Size = new System.Drawing.Size(217, 303);
-            this.hostsListBox.TabIndex = 4;
-            // 
             // analyseButton
             // 
             this.analyseButton.Location = new System.Drawing.Point(87, 414);
@@ -111,21 +103,31 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             // targetHostLabel
             // 
             this.targetHostLabel.AutoSize = true;
-            this.targetHostLabel.Location = new System.Drawing.Point(45, 89);
+            this.targetHostLabel.Location = new System.Drawing.Point(42, 89);
             this.targetHostLabel.Name = "targetHostLabel";
-            this.targetHostLabel.Size = new System.Drawing.Size(64, 13);
+            this.targetHostLabel.Size = new System.Drawing.Size(67, 13);
             this.targetHostLabel.TabIndex = 7;
-            this.targetHostLabel.Text = "Target host:";
+            this.targetHostLabel.Text = "Target host: ";
+            // 
+            // hostPanelContainer
+            // 
+            this.hostPanelContainer.BackColor = System.Drawing.SystemColors.Window;
+            this.hostPanelContainer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.hostPanelContainer.Location = new System.Drawing.Point(115, 89);
+            this.hostPanelContainer.Name = "hostPanelContainer";
+            this.hostPanelContainer.Size = new System.Drawing.Size(217, 302);
+            this.hostPanelContainer.TabIndex = 8;
+            this.hostPanelContainer.AutoScroll = true;  //Needed to add scrollbar
             // 
             // appForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(359, 458);
+            this.Controls.Add(this.hostPanelContainer);
             this.Controls.Add(this.targetHostLabel);
             this.Controls.Add(this.synchroniseButton);
             this.Controls.Add(this.analyseButton);
-            this.Controls.Add(this.hostsListBox);
             this.Controls.Add(this.destinationPathTextBox);
             this.Controls.Add(this.destinationPathLabel);
             this.Controls.Add(this.sourcePathTextBox);
@@ -146,10 +148,10 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         private System.Windows.Forms.TextBox sourcePathTextBox;
         private System.Windows.Forms.Label destinationPathLabel;
         private System.Windows.Forms.TextBox destinationPathTextBox;
-        private System.Windows.Forms.ListBox hostsListBox;
         private System.Windows.Forms.Button analyseButton;
         private System.Windows.Forms.Button synchroniseButton;
         private System.Windows.Forms.Label targetHostLabel;
+        private System.Windows.Forms.Panel hostPanelContainer;
     }
 }
 

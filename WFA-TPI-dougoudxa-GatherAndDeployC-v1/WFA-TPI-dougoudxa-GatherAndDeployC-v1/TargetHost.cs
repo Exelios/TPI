@@ -51,6 +51,26 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// Included in the hostPanel.
         /// </summary>
         private Label hostStatusLabel = new Label();
+
+        /// <summary>
+        /// Height of the labels in the targetHost labels.
+        /// </summary>
+        private const int LABEL_HEIGHT = 13;
+
+        /// <summary>
+        /// Width of the labels in the targetHost labels.
+        /// </summary>
+        private const int LABEL_WIDTH = 180;
+
+        /// <summary>
+        /// Height of targetHost's panel.
+        /// </summary>
+        private const int PANEL_HEIGHT = 35;
+
+        /// <summary>
+        /// Width of targetHost's panel.
+        /// </summary>
+        private const int PANEL_WIDTH = 183;
         #endregion
 
         #region Class methods
@@ -59,14 +79,33 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// </summary>
         /// <param name="hostNameInput">Name given to this targetHost by another class of the application</param>
         /// <param name="hostStatusInput">Status given to this targetHost by another class of the application</param>
-        public TargetHost(string hostNameInput, string hostStatusInput)
+        public TargetHost(string hostNameInput, string hostStatusInput, int index)
         {
             this.hostName = hostNameInput;
-            this.hostStatus = hostStatusInput;
+            this.hostStatus = STATUS_TEXT + hostStatusInput;
 
             //Construction, positioning of the different form elements composing a host in the main form.
-            //to be defined
 
+            hostPanel.Size = new System.Drawing.Size(PANEL_WIDTH, PANEL_HEIGHT);
+            hostPanel.Location = new System.Drawing.Point(1, index * (PANEL_HEIGHT + 1));
+            hostPanel.BackColor = System.Drawing.SystemColors.Window;
+            //will be added in the main panel by main class
+
+            //Assigning text to labels
+            hostNameLabel.Text = hostName;
+            hostStatusLabel.Text = hostStatus;
+
+            //Sizing the 2 labels
+            hostNameLabel.Size = new System.Drawing.Size(LABEL_WIDTH, LABEL_HEIGHT);
+            hostStatusLabel.Size = new System.Drawing.Size(LABEL_WIDTH - 20, LABEL_HEIGHT);
+
+            //Positionning the labels in the targetHostPanel
+            hostNameLabel.Location = new System.Drawing.Point(0, 0);
+            hostStatusLabel.Location = new System.Drawing.Point(20, 14);
+
+            //Adding the controls in the panel
+            hostPanel.Controls.Add(hostNameLabel);
+            hostPanel.Controls.Add(hostStatusLabel);
 
         }
         /*----------------------------------------------------*/
@@ -94,7 +133,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <summary>
         /// Sets new value for the host's status.
         /// </summary>
-        /// <param name="newStatus"></param>
+        /// <param name="newStatus">New status overwriting the old one</param>
         public void setHostStatus(string newStatus)
         {
             this.hostStatus = TargetHost.STATUS_TEXT + newStatus;
@@ -109,6 +148,15 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             hostStatusLabel.Text = hostStatus;
         }
         /*---------------------------------------------------*/
+
+        /// <summary>
+        /// Allows external class to get the hostPanel.
+        /// </summary>
+        /// <returns>hostPanel</returns>
+        public Panel getTargetHostPanel()
+        {
+            return hostPanel;
+        }
         #endregion
     }
 }
