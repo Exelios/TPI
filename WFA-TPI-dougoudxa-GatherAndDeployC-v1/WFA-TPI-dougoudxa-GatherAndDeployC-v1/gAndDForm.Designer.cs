@@ -8,7 +8,7 @@
 
 namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 {
-    partial class appForm
+    partial class gAndDForm
     {
         /// <summary>
         /// Required designer variable.
@@ -38,8 +38,8 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         {
             this.sourcePathLabel = new System.Windows.Forms.Label();
             this.sourcePathTextBox = new System.Windows.Forms.TextBox();
-            this.destinationPathLabel = new System.Windows.Forms.Label();
-            this.destinationPathTextBox = new System.Windows.Forms.TextBox();
+            this.targetPathLabel = new System.Windows.Forms.Label();
+            this.targetPathTextBox = new System.Windows.Forms.TextBox();
             this.analyseButton = new System.Windows.Forms.Button();
             this.synchroniseButton = new System.Windows.Forms.Button();
             this.targetHostLabel = new System.Windows.Forms.Label();
@@ -64,23 +64,23 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.sourcePathTextBox.TabIndex = 1;
             this.sourcePathTextBox.Text = "C:\\";
             // 
-            // destinationPathLabel
+            // targetPathLabel
             // 
-            this.destinationPathLabel.AutoSize = true;
-            this.destinationPathLabel.Location = new System.Drawing.Point(19, 51);
-            this.destinationPathLabel.Name = "destinationPathLabel";
-            this.destinationPathLabel.Size = new System.Drawing.Size(90, 13);
-            this.destinationPathLabel.TabIndex = 2;
-            this.destinationPathLabel.Text = "Destination path: ";
+            this.targetPathLabel.AutoSize = true;
+            this.targetPathLabel.Location = new System.Drawing.Point(19, 51);
+            this.targetPathLabel.Name = "targetPathLabel";
+            this.targetPathLabel.Size = new System.Drawing.Size(90, 13);
+            this.targetPathLabel.TabIndex = 2;
+            this.targetPathLabel.Text = "Destination path: ";
             // 
-            // destinationPathTextBox
+            // targetPathTextBox
             // 
-            this.destinationPathTextBox.Location = new System.Drawing.Point(115, 48);
-            this.destinationPathTextBox.MaxLength = 256;
-            this.destinationPathTextBox.Name = "destinationPathTextBox";
-            this.destinationPathTextBox.Size = new System.Drawing.Size(217, 20);
-            this.destinationPathTextBox.TabIndex = 3;
-            this.destinationPathTextBox.Text = "C:\\";
+            this.targetPathTextBox.Location = new System.Drawing.Point(115, 48);
+            this.targetPathTextBox.MaxLength = 256;
+            this.targetPathTextBox.Name = "targetPathTextBox";
+            this.targetPathTextBox.Size = new System.Drawing.Size(217, 20);
+            this.targetPathTextBox.TabIndex = 3;
+            this.targetPathTextBox.Text = "C:\\";
             // 
             // analyseButton
             // 
@@ -99,6 +99,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.synchroniseButton.TabIndex = 6;
             this.synchroniseButton.Text = "Synchronise";
             this.synchroniseButton.UseVisualStyleBackColor = true;
+            this.synchroniseButton.Click += new System.EventHandler(this.synchroniseButtonClick);
             // 
             // targetHostLabel
             // 
@@ -111,15 +112,15 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             // 
             // hostPanelContainer
             // 
+            this.hostPanelContainer.AutoScroll = true;
             this.hostPanelContainer.BackColor = System.Drawing.SystemColors.Window;
             this.hostPanelContainer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.hostPanelContainer.Location = new System.Drawing.Point(115, 89);
             this.hostPanelContainer.Name = "hostPanelContainer";
             this.hostPanelContainer.Size = new System.Drawing.Size(217, 302);
             this.hostPanelContainer.TabIndex = 8;
-            this.hostPanelContainer.AutoScroll = true;  //Needed to add scrollbar
             // 
-            // appForm
+            // gAndDForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -128,13 +129,13 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.Controls.Add(this.targetHostLabel);
             this.Controls.Add(this.synchroniseButton);
             this.Controls.Add(this.analyseButton);
-            this.Controls.Add(this.destinationPathTextBox);
-            this.Controls.Add(this.destinationPathLabel);
+            this.Controls.Add(this.targetPathTextBox);
+            this.Controls.Add(this.targetPathLabel);
             this.Controls.Add(this.sourcePathTextBox);
             this.Controls.Add(this.sourcePathLabel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.Name = "appForm";
+            this.Name = "gAndDForm";
             this.ShowIcon = false;
             this.Text = "GatherAndDeployC#";
             this.ResumeLayout(false);
@@ -146,8 +147,8 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
         private System.Windows.Forms.Label sourcePathLabel;
         private System.Windows.Forms.TextBox sourcePathTextBox;
-        private System.Windows.Forms.Label destinationPathLabel;
-        private System.Windows.Forms.TextBox destinationPathTextBox;
+        private System.Windows.Forms.Label targetPathLabel;
+        private System.Windows.Forms.TextBox targetPathTextBox;
         private System.Windows.Forms.Button analyseButton;
         private System.Windows.Forms.Button synchroniseButton;
         private System.Windows.Forms.Label targetHostLabel;

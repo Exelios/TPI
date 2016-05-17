@@ -18,7 +18,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
     /// <summary>
     /// Contains every element needed to represent a target host in the main form.
     /// </summary>
-    class TargetHost
+    public class TargetHost
     {
         #region Class Attributes
         /// <summary>
@@ -36,6 +36,11 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// contains the host's status.
         /// </summary>
         private string hostStatus;
+
+        /// <summary>
+        /// Path of destination for incoming file/directory transfers
+        /// </summary>
+        private String hostPath;
 
         /// <summary>
         /// Represents the host in the host list box in the main form.
@@ -157,6 +162,25 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         {
             return hostPanel;
         }
+
+        /// <summary>
+        /// Getter fetching the name of the host
+        /// </summary>
+        /// <returns>Host's name</returns>
+        public String getTargetHostName()
+        {
+            return hostName;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="newTargetPath"></param>
+        public void setTargetPath(String newTargetPath)
+        {
+            hostPath = newTargetPath;
+        }
+        /*--------------------------------------------------------*/
         #endregion
     }
 }
