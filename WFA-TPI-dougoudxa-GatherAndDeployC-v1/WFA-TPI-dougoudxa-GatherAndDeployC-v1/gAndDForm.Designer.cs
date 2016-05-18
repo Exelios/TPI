@@ -62,7 +62,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.sourcePathTextBox.Name = "sourcePathTextBox";
             this.sourcePathTextBox.Size = new System.Drawing.Size(217, 20);
             this.sourcePathTextBox.TabIndex = 1;
-            this.sourcePathTextBox.Text = "C:\\";
+            this.sourcePathTextBox.Text = "C:\\Users\\" + System.Environment.UserName + "\\Desktop\\";
             // 
             // targetPathLabel
             // 

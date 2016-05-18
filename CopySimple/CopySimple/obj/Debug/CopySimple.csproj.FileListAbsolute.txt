@@ -1,0 +1,8 @@
+F:\TPI\CopySimple\CopySimple\bin\Debug\CopySimple.exe.config
+F:\TPI\CopySimple\CopySimple\bin\Debug\CopySimple.exe
+F:\TPI\CopySimple\CopySimple\bin\Debug\CopySimple.pdb
+F:\TPI\CopySimple\CopySimple\obj\Debug\CopySimple.Form1.resources
+F:\TPI\CopySimple\CopySimple\obj\Debug\CopySimple.Properties.Resources.resources
+F:\TPI\CopySimple\CopySimple\obj\Debug\CopySimple.csproj.GenerateResource.Cache
+F:\TPI\CopySimple\CopySimple\obj\Debug\CopySimple.exe
+F:\TPI\CopySimple\CopySimple\obj\Debug\CopySimple.pdb

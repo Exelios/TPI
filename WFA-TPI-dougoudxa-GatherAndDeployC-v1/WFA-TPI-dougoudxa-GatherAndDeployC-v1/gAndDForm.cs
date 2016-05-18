@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 {
@@ -26,7 +27,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// </summary>
         private bool stopSynchronization = false;
 
-        private Thread syncUpdateThread;
+        
 
         public gAndDForm()
         {
@@ -42,7 +43,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             hostPanelContainer.Controls.Add(targetHostList[0].getTargetHostPanel());
             hostPanelContainer.Controls.Add(targetHostList[1].getTargetHostPanel());
 
-            syncUpdateThread = new Thread(updateTargetStatus);
+            
 
             //Testing purposes.
             //int dummyEntries = 17;
@@ -70,39 +71,80 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 
                 synchroniseButton.Text = "Interrupt";
                 stopSynchronization = false;
-                syncUpdateThread.Start();
 
-                foreach (TargetHost target in targetHostList)
+                //Checks if the source exists
+                bool[] existenceResults = checkExistence(sourcePathTextBox.Text);
+
+                //If the source doesn't exist.
+                if (!existenceResults[0] && !existenceResults[1])
                 {
-                    synchronise(currentSource, target, index);
-                    ++index;
+                    System.Windows.Forms.MessageBox.Show("No such file or directory.", "Error",
+                        System.Windows.Forms.MessageBoxButtons.OK,
+                        System.Windows.Forms.MessageBoxIcon.Error);
                 }
+                else
+                {
+                    //Transfers file/directory to every host chosen.
+                    foreach (TargetHost target in targetHostList)
+                    {
+                        synchronise(currentSource, target, existenceResults, index);
+                        ++index;
+                    }
+                }
+
                 stopSynchronization = true;
-                syncUpdateThread.Abort();
                 synchroniseButton.Text = "Synchronise";
             }
             else
             {
-                syncUpdateThread.Abort();
                 stopSynchronization = true;
                 synchroniseButton.Text = "Synchronise";
             }
         }
         /*---------------------------------------------------------------*/
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="currentSourcePath"></param>
+            /// <returns></returns>
+        private bool[] checkExistence(String currentSourcePath)
+        {
+            bool[] results = new bool[2];
+
+            //First, check if what we want to transfer is a file or a directory.
+            results[0] = false;
+            results[1] = false;
+
+            //Checks if the file exists.
+            if (File.Exists(currentSourcePath))
+            {
+                results[0] = true;
+            }
+
+            //Checks if the directory exists.
+            if (Directory.Exists(currentSourcePath))
+            {
+                results[1] = true;
+            }
+
+            return results;
+        }
+        /*---------------------------------------------------------------------*/
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="source"></param>
         /// <param name="target"></param>
+        /// <param name="existenceResults"></param>
         /// <param name="index"></param>
-        private void synchronise(SourceHost source, TargetHost target, int index)
+        private void synchronise(SourceHost source, TargetHost target, bool[] existenceResults, int index)
         {
             //Test sharing and impersonating
-            source.DoWorkUnderImpersonation(targetHostList[index].getTargetHostName(),
-                sourcePathTextBox.Text, targetHostList[index].getTargetHostName() + targetPathTextBox.Text.Substring(2));
-
-
+            source.share(sourcePathTextBox.Text, 
+                targetHostList[index].getTargetHostName() + targetPathTextBox.Text.Substring(2), 
+                existenceResults);
         }
         /*------------------------------------------------------------------*/
         
