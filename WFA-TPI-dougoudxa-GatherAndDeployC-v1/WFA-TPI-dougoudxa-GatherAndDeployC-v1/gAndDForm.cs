@@ -14,21 +14,29 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 {
     public partial class gAndDForm : Form
     {
+        #region Class attributes
         /// <summary>
-        /// 
+        /// List of the selected targetHosts operator wants to synchronize
         /// </summary>
         private List<TargetHost> targetHostList = new List<TargetHost>();
 
-        //Source is needed for file/directory transfers. Instanciated.
+        /// <summary>
+        /// Source is needed for file/directory transfers. Instanciated.
+        /// </summary>
         private SourceHost currentSource = new SourceHost();
 
         /// <summary>
-        /// 
+        /// Variable necessary to stop synchronization process.
         /// </summary>
         private bool stopSynchronization = false;
 
-        
+        #endregion
 
+        #region Class methods
+
+        /// <summary>
+        /// Constructor of the gAndDForm class.
+        /// </summary>
         public gAndDForm()
         {
             InitializeComponent();
@@ -59,18 +67,18 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         }
 
         /// <summary>
-        /// 
+        /// Event method when synchronizeButton is clicked
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void synchroniseButtonClick(object sender, EventArgs e)
+        private void synchronizeButtonClick(object sender, EventArgs e)
         {
-            if (synchroniseButton.Text == "Synchronise")
+            if (synchroniseButton.Text == "Synchronize")
             {
                 int index = 0;
                 
                 synchroniseButton.Text = "Interrupt";
-                stopSynchronization = false;
+                //stopSynchronization = false;
 
                 //Checks if the source exists
                 bool[] existenceResults = checkExistence(sourcePathTextBox.Text);
@@ -87,27 +95,27 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                     //Transfers file/directory to every host chosen.
                     foreach (TargetHost target in targetHostList)
                     {
-                        synchronise(currentSource, target, existenceResults, index);
+                        synchronize(currentSource, target, existenceResults, index);
                         ++index;
                     }
                 }
 
-                stopSynchronization = true;
-                synchroniseButton.Text = "Synchronise";
+                //stopSynchronization = true;
+                synchroniseButton.Text = "Synchronize";
             }
             else
             {
-                stopSynchronization = true;
-                synchroniseButton.Text = "Synchronise";
+                //stopSynchronization = true;
+                synchroniseButton.Text = "Synchronize";
             }
         }
         /*---------------------------------------------------------------*/
 
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="currentSourcePath"></param>
-            /// <returns></returns>
+        /// <summary>
+        /// Method verifying existence of an object
+        /// </summary>
+        /// <param name="currentSourcePath">Object path</param>
+        /// <returns>Array where indexes 0 and 1 are for files respectivily directories</returns>
         private bool[] checkExistence(String currentSourcePath)
         {
             bool[] results = new bool[2];
@@ -133,15 +141,15 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*---------------------------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Method called from event on the synchronize button
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="target"></param>
-        /// <param name="existenceResults"></param>
-        /// <param name="index"></param>
-        private void synchronise(SourceHost source, TargetHost target, bool[] existenceResults, int index)
+        /// <param name="source">Source object</param>
+        /// <param name="target">Target path</param>
+        /// <param name="existenceResults">Boolean array</param>
+        /// <param name="index">Relitive to hosts indexes</param>
+        private void synchronize(SourceHost source, TargetHost target, bool[] existenceResults, int index)
         {
-            //Test sharing and impersonating
+            //Shares file / directory and asks if we want to overwrite an existing file / directory
             source.share(sourcePathTextBox.Text, 
                 targetHostList[index].getTargetHostName() + targetPathTextBox.Text.Substring(2), 
                 existenceResults);
@@ -149,7 +157,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*------------------------------------------------------------------*/
         
         /// <summary>
-        /// 
+        /// Method keeping the status of a host up to date.
         /// </summary>
         private void updateTargetStatus()
         {
@@ -168,5 +176,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             }
         }
         /*-------------------------------------------------------------------------------*/
+
+        #endregion
     }
 }

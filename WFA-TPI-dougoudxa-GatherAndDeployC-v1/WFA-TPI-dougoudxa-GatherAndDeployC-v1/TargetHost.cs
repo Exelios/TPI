@@ -21,6 +21,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
     public class TargetHost
     {
         #region Class Attributes
+
         /// <summary>
         /// First characters in hostStatus String. 
         /// Is of constant value.
@@ -76,9 +77,11 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// Width of targetHost's panel.
         /// </summary>
         private const int PANEL_WIDTH = 183;
+
         #endregion
 
         #region Class methods
+
         /// <summary>
         /// Constructor of the targetHost class.
         /// </summary>
@@ -173,9 +176,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         }
 
         /// <summary>
-        /// 
+        /// Sets a new target path to host
         /// </summary>
-        /// <param name="newTargetPath"></param>
+        /// <param name="newTargetPath">New path</param>
         public void setTargetPath(String newTargetPath)
         {
             hostPath = newTargetPath;

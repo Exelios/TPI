@@ -28,27 +28,22 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         #region Class attributes
 
         /// <summary>
-        /// 
+        /// Domain name of the source host \\domain\.
         /// </summary>
         private String sourceHostName;
 
         /// <summary>
-        /// 
-        /// </summary>
-        private String sourceHostPassword;
-
-        /// <summary>
-        /// 
+        /// Path of the source object going to be deployed.
         /// </summary>
         private String sourcePath;
+
         #endregion
 
         #region Class methods
 
         /// <summary>
-        /// 
+        /// Constructor of the sourceHost class.
         /// </summary>
-        /// <param name="sourceName"></param>
         public SourceHost()
         {
             sourceHostName = System.Environment.UserName;
@@ -60,15 +55,19 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         }
         /*------------------------------------------*/
 
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="newSourcePath"></param>
+        /// <summary>
+        /// Sets new path to source object.
+        /// </summary>
+        /// <param name="newSourcePath"></param>
         public void setSourcePath(String newSourcePath)
         {
             sourcePath = newSourcePath;
         }
         /*--------------------------------------------------------------*/
+
+        #endregion
+
+        #region Class Methods
 
         /// <summary>
         /// Taken from this source:
@@ -94,7 +93,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             foreach (FileInfo file in files)
             {
                 string tempPath = Path.Combine(TargetDirectoryPath, file.Name);
-                file.CopyTo(tempPath, false);
+                file.CopyTo(tempPath, true);
             }
 
             // If copying subdirectories, copy them and their contents to new location.
@@ -111,16 +110,48 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*----------------------------------------------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// source: http://stackoverflow.com/questions/468119/whats-the-best-way-to-calculate-the-size-of-a-directory-in-net
+        /// Convenient way to calculate the size of a directory. 
+        /// Completely based on the source. Only the variable names change.
         /// </summary>
-        /// <param name="sourcePath"></param>
-        /// <param name="targetPath"></param>
+        /// <param name="directory"></param>
+        /// <returns></returns>
+        private long calculateDirectorySize(DirectoryInfo directory)
+        {
+            long directorySize = 0;
+
+            // Add file sizes.
+            FileInfo[] directoryFilesArray = directory.GetFiles();
+            foreach (FileInfo file in directoryFilesArray)
+            {
+                directorySize += file.Length;
+            }
+            // Add subdirectory sizes.
+            DirectoryInfo[] directorySubdirectoriesArray = directory.GetDirectories();
+            foreach (DirectoryInfo subdirectory in directorySubdirectoriesArray)
+            {
+                directorySize += calculateDirectorySize(subdirectory);
+            }
+
+            return directorySize;
+        }
+        /*-------------------------------------------------------------------------------------------------*/
+
+        /// <summary>
+        /// Method charged with managing a object transfer
+        /// </summary>
+        /// <param name="sourcePath">Source object</param>
+        /// <param name="targetPath">Target object place</param>
         public void share(String sourcePath, String targetPath, bool[] existenceResults)
         {
+            System.Windows.Forms.DialogResult result;
+
+            String[] targetName = targetPath.Split('\\');
+
             //Case where it's not a directory or the directory doesn't exist.
             if(!existenceResults[1])
             {
-                //Case where it's neither a fole nor a directory -> path doesn't exist
+                //Case where it's neither a file nor a directory -> path doesn't exist
                 if (!existenceResults[0])
                 {
                     //Do not display Error from here, it will show as many times as there are hosts to synchronise.
@@ -128,16 +159,142 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 }
                 else  //Case where it is a file.
                 {
-                    File.Copy(sourcePath, targetPath, true);
+                    //Files aren't the same in last modification time.
+                    if (!compareExisting("file", sourcePath, targetPath))
+                    {
+                        File.Copy(sourcePath, targetPath, true);
+                    }
+                    else
+                    {
+                        FileInfo currentFile = new FileInfo(sourcePath);
+                        FileInfo targetFile = new FileInfo(targetPath);
+
+                        //Displays a multiline message box with information concerning a name conflict.
+                        result = System.Windows.Forms.MessageBox.Show(
+                            "File already exists, overwrite ?" + Environment.NewLine + Environment.NewLine +
+                            "Source :" + Environment.NewLine +
+                            "Size : " + formatSizeInteger(currentFile.Length) + Environment.NewLine +
+                            "Last modification : " + currentFile.LastWriteTime + Environment.NewLine + Environment.NewLine +
+                            "Destination :" + Environment.NewLine +
+                            "Size : " + formatSizeInteger(targetFile.Length) + Environment.NewLine +
+                            "Last modification : " + targetFile.LastWriteTime,
+                            "Warning for host " + targetName[2],
+                            System.Windows.Forms.MessageBoxButtons.YesNo,
+                            System.Windows.Forms.MessageBoxIcon.Information);
+
+                        if(result == System.Windows.Forms.DialogResult.Yes)
+                        {
+                            File.Copy(sourcePath, targetPath, true);
+
+                            FileInfo overwrittenFile = new FileInfo(targetPath);
+                            overwrittenFile.LastWriteTime = DateTime.Now;
+                        }
+                    }
                 }
             }
             else //Case where it is a directory.
             {
-                DirectoryCopy(sourcePath, targetPath, true);
+                //Directories aren't the same in last modification time.
+                if (!compareExisting("directory", sourcePath, targetPath))
+                {
+                    DirectoryCopy(sourcePath, targetPath, true);
+                }
+                else
+                {
+                    DirectoryInfo currentDirectory = new DirectoryInfo(sourcePath);
+                    DirectoryInfo targetDirectory = new DirectoryInfo(targetPath);
+
+                    //Displays a multiline message box with information concerning a name conflict.
+                    result = System.Windows.Forms.MessageBox.Show(
+                            "Directory already exists, overwrite ?" + Environment.NewLine + Environment.NewLine +
+                            "Source :" + Environment.NewLine +
+                            "Size : " + formatSizeInteger(calculateDirectorySize(currentDirectory)) + Environment.NewLine +
+                            "Last modification : " + currentDirectory.LastWriteTime + Environment.NewLine + Environment.NewLine +
+                            "Destination :" + Environment.NewLine +
+                            "Size : " + formatSizeInteger(calculateDirectorySize(targetDirectory)) + Environment.NewLine +
+                            "Last modification : " + targetDirectory.LastWriteTime,
+                            "Warning for host " + targetName[2],
+                            System.Windows.Forms.MessageBoxButtons.YesNo,
+                            System.Windows.Forms.MessageBoxIcon.Information);
+
+                    if(result == System.Windows.Forms.DialogResult.Yes)
+                    {
+                        DirectoryCopy(sourcePath, targetPath, true);
+                    }
+                }
             }
         }
         /*---------------------------------------------------------------------------------*/
 
+        /// <summary>
+        /// Method verifying if a directory/file exists
+        /// </summary>
+        /// <param name="type">Directory or File</param>
+        /// <param name="sourcePath">Source Directory/File</param>
+        /// <param name="targetPath">Target Directory/File</param>
+        /// <returns>Status true if it exists</returns>
+        private bool compareExisting(String type, String sourcePath, String targetPath)
+        {
+            switch (type)
+            {
+                case "directory":
+                    if(Directory.Exists(targetPath))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                case "file":
+                    if (File.Exists(targetPath))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                default:
+                    return true;
+            }
+        }
+        /*--------------------------------------------------------------------------------------------*/
+
+        /// <summary>
+        /// Method that formats an integer into suffixed file sizes.
+        /// </summary>
+        /// <param name="input">Original size in octet unit.</param>
+        /// <returns>The size in the correct octet prefixed unit.</returns>
+        private String formatSizeInteger(long input)
+        {
+            if (input > Math.Pow(1000, 3))
+            {
+                return (input / Math.Pow(1000, 3)).ToString("F2") + " Go";
+            }
+            else
+            {
+                if(input > Math.Pow(1000, 2))
+                {
+                    return (input / Math.Pow(1000, 2)).ToString("F2") + " Mo";
+                }
+                else
+                {
+                    if(input > Math.Pow(1000, 1))
+                    {
+                        return (input / Math.Pow(1000, 1)).ToString("F2") + " ko";
+                    }
+                    else
+                    {
+                        return (input).ToString() + " o";
+                    }
+                }
+            }
+        }
+        /*-----------------------------------------------------------------------------*/
+        
         #endregion
     }
 }

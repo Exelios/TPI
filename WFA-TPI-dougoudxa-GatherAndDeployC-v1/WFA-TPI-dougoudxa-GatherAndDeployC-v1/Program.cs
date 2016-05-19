@@ -25,8 +25,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            gAndDForm appForm = new gAndDForm();    //Needed to have an object reference
-            Application.Run(appForm);
+            Application.Run(new gAndDForm());
         }
     }
 }

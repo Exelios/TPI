@@ -49,9 +49,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Command.cs" />
-    <Compile Include="Comparison.cs" />
-    <Compile Include="Deploy.cs" />
     <Compile Include="gAndDForm.cs">
       <SubType>Form</SubType>
     </Compile>
