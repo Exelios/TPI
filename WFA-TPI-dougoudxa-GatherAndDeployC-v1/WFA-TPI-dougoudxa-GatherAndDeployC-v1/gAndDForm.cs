@@ -43,18 +43,18 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             hostPanelContainer.Controls.Add(targetHostList[0].getTargetHostPanel());
             hostPanelContainer.Controls.Add(targetHostList[1].getTargetHostPanel());
 
-            
+
 
             //Testing purposes.
-            //int dummyEntries = 17;
-            //TargetHost tempHost;
-            //
-            //for (int index = 0; index < dummyEntries; ++index)
-            //{
-            //    tempHost = new TargetHost("\\\\INF-N511-" + (index + 1).ToString("00"), "dummy test", index);
-            //
-            //    hostPanelContainer.Controls.Add(tempHost.getTargetHostPanel());
-            //}
+            int dummyEntries = 17;
+            TargetHost tempHost;
+
+            for (int index = 0; index < dummyEntries; ++index)
+            {
+                tempHost = new TargetHost("\\\\INF-N511-" + (index + 1).ToString("00"), "dummy test", index + 2);
+                
+                hostPanelContainer.Controls.Add(tempHost.getTargetHostPanel());
+            }
             //End of test
         }
 
@@ -153,7 +153,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// </summary>
         private void updateTargetStatus()
         {
-            long length = new System.IO.FileInfo(sourcePathTextBox.Text).Length;
+            long length = new FileInfo(sourcePathTextBox.Text).Length;
 
             long tempSize;
 
@@ -161,7 +161,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             {
                 foreach(TargetHost target in targetHostList)
                 {
-                    tempSize = new System.IO.FileInfo(target.getTargetHostName() + targetPathTextBox.Text.Substring(2)).Length;
+                    tempSize = new FileInfo(target.getTargetHostName() + targetPathTextBox.Text.Substring(2)).Length;
 
                     target.setHostStatus((length / tempSize) * 100 + " % tranferred.");
                 }

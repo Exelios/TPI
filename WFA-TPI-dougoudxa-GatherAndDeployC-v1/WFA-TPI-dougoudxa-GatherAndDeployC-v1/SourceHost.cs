@@ -123,7 +123,8 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 //Case where it's neither a fole nor a directory -> path doesn't exist
                 if (!existenceResults[0])
                 {
-                    
+                    //Do not display Error from here, it will show as many times as there are hosts to synchronise.
+                    //Error taken care of in synchronizing method in gAndDForm class.
                 }
                 else  //Case where it is a file.
                 {

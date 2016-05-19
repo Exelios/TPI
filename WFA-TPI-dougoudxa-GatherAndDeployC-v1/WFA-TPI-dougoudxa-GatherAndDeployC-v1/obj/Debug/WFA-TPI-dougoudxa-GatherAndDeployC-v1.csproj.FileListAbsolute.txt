@@ -14,5 +14,5 @@ D:\GitHubRep\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherA
 D:\GitHubRep\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\obj\Debug\WFA-TPI-dougoudxa-GatherAndDeployC-v1.csproj.GenerateResource.Cache
 D:\GitHubRep\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\bin\Debug\WFA-TPI-dougoudxa-GatherAndDeployC-v1.exe
 D:\GitHubRep\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\bin\Debug\WFA-TPI-dougoudxa-GatherAndDeployC-v1.pdb
-D:\GitHubRep\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\obj\Debug\WFA_TPI_dougoudxa_GatherAndDeployC_v1.appForm.resources
 F:\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\obj\Debug\WFA_TPI_dougoudxa_GatherAndDeployC_v1.gAndDForm.resources
+D:\GitHubRep\TPI\WFA-TPI-dougoudxa-GatherAndDeployC-v1\WFA-TPI-dougoudxa-GatherAndDeployC-v1\obj\Debug\WFA_TPI_dougoudxa_GatherAndDeployC_v1.gAndDForm.resources
