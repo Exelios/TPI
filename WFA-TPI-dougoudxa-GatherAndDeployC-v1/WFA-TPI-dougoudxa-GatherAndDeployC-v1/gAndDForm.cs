@@ -41,28 +41,24 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         {
             InitializeComponent();
 
-            //hardcoding - Transfer test
-            TargetHost client1 = new TargetHost("\\\\WIN10-TPI-CLI-1", "ONLINE", 0);
-            TargetHost client2 = new TargetHost("\\\\WIN10-TPI-CLI-2", "ONLINE", 1);
-
-            targetHostList.Add(client1);
-            targetHostList.Add(client2);
-
-            hostPanelContainer.Controls.Add(targetHostList[0].getTargetHostPanel());
-            hostPanelContainer.Controls.Add(targetHostList[1].getTargetHostPanel());
-
-
-
-            //Testing purposes.
-            int dummyEntries = 17;
-            TargetHost tempHost;
-
-            for (int index = 0; index < dummyEntries; ++index)
+            //Loop writing all the rooms in the establishment.
+            for (int index = 0; index < NetworkConfig.roomAmount; ++index)
             {
-                tempHost = new TargetHost("\\\\INF-N511-" + (index + 1).ToString("00"), "dummy test", index + 2);
-                
-                hostPanelContainer.Controls.Add(tempHost.getTargetHostPanel());
+                roomListBox.Items.Add(NetworkConfig.getRoom(index));
             }
+            
+
+
+            ////Testing purposes.
+            //int dummyEntries = 17;
+            //TargetHost tempHost;
+
+            //for (int index = 0; index < dummyEntries; ++index)
+            //{
+            //    tempHost = new TargetHost("\\\\INF-N511-" + (index + 1).ToString("00"), "dummy test", index + 2);
+                
+            //    hostPanelContainer.Controls.Add(tempHost.getTargetHostPanel());
+            //}
             //End of test
         }
 
@@ -176,6 +172,30 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             }
         }
         /*-------------------------------------------------------------------------------*/
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void analyseButtonClick(object sender, EventArgs e)
+        {
+            //Empies the hostPanel
+            hostPanelContainer.Controls.Clear();
+
+            String tempRoom = Convert.ToString(roomListBox.SelectedItem);
+
+            int computers = 17;
+            TargetHost tempHost;
+
+            for (int index = 0; index < computers; ++index)
+            {
+                tempHost = new TargetHost("\\\\INF-" + tempRoom + "-" + (index + 1).ToString("00"), "room test", index);
+
+                hostPanelContainer.Controls.Add(tempHost.getTargetHostPanel());
+            }
+        }
+        /*-----------------------------------------------------------------------------*/
 
         #endregion
     }

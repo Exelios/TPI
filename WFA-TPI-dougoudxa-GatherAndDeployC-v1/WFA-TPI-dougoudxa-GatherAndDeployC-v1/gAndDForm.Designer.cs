@@ -66,7 +66,6 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.sourcePathTextBox.Name = "sourcePathTextBox";
             this.sourcePathTextBox.Size = new System.Drawing.Size(256, 20);
             this.sourcePathTextBox.TabIndex = 1;
-            this.sourcePathTextBox.Text = "C:\\Users\\Win10Rsync\\Desktop\\";
             // 
             // targetPathLabel
             // 
@@ -84,7 +83,6 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.targetPathTextBox.Name = "targetPathTextBox";
             this.targetPathTextBox.Size = new System.Drawing.Size(256, 20);
             this.targetPathTextBox.TabIndex = 3;
-            this.targetPathTextBox.Text = "C:\\";
             // 
             // analyseButton
             // 
@@ -94,6 +92,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.analyseButton.TabIndex = 5;
             this.analyseButton.Text = "Analyze";
             this.analyseButton.UseVisualStyleBackColor = true;
+            this.analyseButton.Click += new System.EventHandler(this.analyseButtonClick);
             // 
             // synchroniseButton
             // 
@@ -129,7 +128,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.roomListBox.FormattingEnabled = true;
             this.roomListBox.Location = new System.Drawing.Point(5, 103);
             this.roomListBox.Name = "roomListBox";
-            this.roomListBox.Size = new System.Drawing.Size(120, 17);
+            this.roomListBox.Size = new System.Drawing.Size(120, 30);
             this.roomListBox.TabIndex = 9;
             // 
             // roomListBoxLabel
@@ -143,16 +142,16 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             // 
             // manualHostTextBox
             // 
-            this.manualHostTextBox.Location = new System.Drawing.Point(5, 154);
+            this.manualHostTextBox.Location = new System.Drawing.Point(5, 164);
             this.manualHostTextBox.Multiline = true;
             this.manualHostTextBox.Name = "manualHostTextBox";
-            this.manualHostTextBox.Size = new System.Drawing.Size(120, 263);
+            this.manualHostTextBox.Size = new System.Drawing.Size(120, 253);
             this.manualHostTextBox.TabIndex = 11;
             // 
             // manualHostTextBoxLabel
             // 
             this.manualHostTextBoxLabel.AutoSize = true;
-            this.manualHostTextBoxLabel.Location = new System.Drawing.Point(30, 135);
+            this.manualHostTextBoxLabel.Location = new System.Drawing.Point(30, 148);
             this.manualHostTextBoxLabel.Name = "manualHostTextBoxLabel";
             this.manualHostTextBoxLabel.Size = new System.Drawing.Size(70, 13);
             this.manualHostTextBoxLabel.TabIndex = 12;
