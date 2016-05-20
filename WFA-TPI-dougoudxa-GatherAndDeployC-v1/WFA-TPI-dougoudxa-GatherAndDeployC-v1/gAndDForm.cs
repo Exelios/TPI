@@ -145,10 +145,21 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="index">Relitive to hosts indexes</param>
         private void synchronize(SourceHost source, TargetHost target, bool[] existenceResults, int index)
         {
-            //Shares file / directory and asks if we want to overwrite an existing file / directory
-            source.share(sourcePathTextBox.Text, 
-                targetHostList[index].getTargetHostName() + targetPathTextBox.Text.Substring(2), 
-                existenceResults);
+            //Shares file / directory and asks if we want to overwrite an existing file / directory 
+            //Works for connected hosts.
+
+            String currentStatus = target.getHostStatus();
+
+            if (currentStatus == NetworkConfig.connectionStatusArray[0]+ ' ')
+            {
+                source.share(sourcePathTextBox.Text,
+                    targetHostList[index].getTargetHostName() + targetPathTextBox.Text.Substring(2),
+                    existenceResults);
+            }
+            else
+            {
+                //System.Windows.Forms.MessageBox.Show("Host is " + currentStatus, targetHostList[index].getTargetHostName());
+            }
         }
         /*------------------------------------------------------------------*/
         
@@ -160,10 +171,11 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="e"></param>
         private void analyseButtonClick(object sender, EventArgs e)
         {
-            if(NetworkConfig.analyzeThread.ThreadState == ThreadState.Running)
-            {
-                NetworkConfig.analyzeThread.Join();
-            }
+            //Not operationnal
+            //if(NetworkConfig.analyzeThread.ThreadState == ThreadState.Running)
+            //{
+            //    NetworkConfig.analyzeThread.Join();
+            //}
 
             //Empties the hostPanel
             hostPanelContainer.Controls.Clear();
@@ -176,12 +188,13 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             {
                 tempHostName = "\\\\INF-" + tempRoom + "-" + (index + 1).ToString("00");
 
-                targetHostList.Add(new TargetHost(tempHostName, "", index));
+                targetHostList.Add(new TargetHost(tempHostName, NetworkConfig.PingHost(tempHostName.Split('\\')[2]), index));
 
                 hostPanelContainer.Controls.Add(targetHostList[index].getTargetHostPanel());
             }
 
-            NetworkConfig.analyzeThread.Start();
+            //Not operationnal
+            //NetworkConfig.analyzeThread.Start();
         }
         /*-----------------------------------------------------------------------------*/
 

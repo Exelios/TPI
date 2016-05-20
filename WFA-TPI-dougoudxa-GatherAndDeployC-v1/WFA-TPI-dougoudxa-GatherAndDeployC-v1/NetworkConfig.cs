@@ -41,7 +41,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <summary>
         /// 
         /// </summary>
-        private static String[] connectionStatusArray = { "Connected", "Disconnected", "Unreachable" };
+        public static String[] connectionStatusArray = { "Connected", "Disconnected", "Offline" };
         
         /// <summary>
         /// 
@@ -101,7 +101,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                         //The Send() method expects 4 items:
                         //1) The IPAddress we are pinging
                         //2) The timeout value
-                        PingReply pingReply = ping.Send(address, 20);
+                        PingReply pingReply = ping.Send(address, 5);
 
                         //make sure we dont have a null reply
                         if (!(pingReply == null))
