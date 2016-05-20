@@ -77,7 +77,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// Width of targetHost's panel.
         /// </summary>
         private const int PANEL_WIDTH = 183;
-
+        
         #endregion
 
         #region Class methods
@@ -96,7 +96,15 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
             hostPanel.Size = new System.Drawing.Size(PANEL_WIDTH, PANEL_HEIGHT);
             hostPanel.Location = new System.Drawing.Point(1, index * (PANEL_HEIGHT + 1));
-            hostPanel.BackColor = System.Drawing.SystemColors.Window;
+
+            if (index % 2 == 0)
+            {
+                hostPanel.BackColor = System.Drawing.SystemColors.Window;
+            }
+            else
+            {
+                hostPanel.BackColor = System.Drawing.SystemColors.Control;
+            }
             //will be added in the main panel by main class
 
             //Assigning text to labels
@@ -165,6 +173,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         {
             return hostPanel;
         }
+        /*---------------------------------------------------*/
 
         /// <summary>
         /// Getter fetching the name of the host
@@ -174,6 +183,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         {
             return hostName;
         }
+        /*---------------------------------------------------*/
 
         /// <summary>
         /// Sets a new target path to host

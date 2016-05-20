@@ -8,9 +8,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Net;
-using System.Net.Sockets;
-using System.Net.NetworkInformation;
 using System.IO;
 
 namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
@@ -21,7 +18,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <summary>
         /// List of the selected targetHosts operator wants to synchronize
         /// </summary>
-        private List<TargetHost> targetHostList = new List<TargetHost>();
+        public static List<TargetHost> targetHostList = new List<TargetHost>();
 
         /// <summary>
         /// Source is needed for file/directory transfers. Instanciated.
@@ -155,26 +152,6 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         }
         /*------------------------------------------------------------------*/
         
-        /// <summary>
-        /// Method keeping the status of a host up to date.
-        /// </summary>
-        private void updateTargetStatus()
-        {
-            long length = new FileInfo(sourcePathTextBox.Text).Length;
-
-            long tempSize;
-
-            while (!stopSynchronization)
-            {
-                foreach(TargetHost target in targetHostList)
-                {
-                    tempSize = new FileInfo(target.getTargetHostName() + targetPathTextBox.Text.Substring(2)).Length;
-
-                    target.setHostStatus((length / tempSize) * 100 + " % tranferred.");
-                }
-            }
-        }
-        /*-------------------------------------------------------------------------------*/
 
         /// <summary>
         /// 
@@ -183,119 +160,45 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="e"></param>
         private void analyseButtonClick(object sender, EventArgs e)
         {
-            //Empies the hostPanel
+            if(NetworkConfig.analyzeThread.ThreadState == ThreadState.Running)
+            {
+                NetworkConfig.analyzeThread.Join();
+            }
+
+            //Empties the hostPanel
             hostPanelContainer.Controls.Clear();
 
             String tempRoom = Convert.ToString(roomListBox.SelectedItem);
 
-            int computers = 17;
-
             String tempHostName;
 
-            String pingResult;
-
-            TargetHost tempHost;
-
-            for (int index = 0; index < computers; ++index)
+            for (int index = 0; index < NetworkConfig.machineAmount; ++index)
             {
                 tempHostName = "\\\\INF-" + tempRoom + "-" + (index + 1).ToString("00");
 
-                pingResult = PingHost(tempHostName.Split('\\')[0]);
+                targetHostList.Add(new TargetHost(tempHostName, "", index));
 
-                tempHost = new TargetHost(tempHostName, pingResult, index);
-
-                hostPanelContainer.Controls.Add(tempHost.getTargetHostPanel());
+                hostPanelContainer.Controls.Add(targetHostList[index].getTargetHostPanel());
             }
+
+            NetworkConfig.analyzeThread.Start();
         }
         /*-----------------------------------------------------------------------------*/
 
         /// <summary>
-        /// http://stackoverflow.com/questions/3689728/ping-a-hostname-on-the-network
+        /// 
         /// </summary>
-        /// <param name="host"></param>
-        /// <returns></returns>
-        public static string PingHost(string host)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void gAndDFormFormClosing(object sender, FormClosingEventArgs e)
         {
-            //string to hold our return messge
-            string returnMessage = string.Empty;
-
-            //IPAddress instance for holding the returned host
-            bool success = true;
-
-            IPAddress address = null;
-
-            try
-            {
-                address = Dns.GetHostEntry(host).AddressList[0];
-            }
-            catch (SocketException ex)
-            {
-                success = false;
-            }
-
-            //set the ping options, TTL 128
-            PingOptions pingOptions = new PingOptions(128, true);
-
-            //create a new ping instance
-            Ping ping = new Ping();
-
-            //32 byte buffer (create empty)
-            byte[] buffer = new byte[32];
-
-            if (success)
-            {
-                //here we will ping the host 4 times (standard)
-                for (int i = 0; i < 4; i++)
-                {
-                    try
-                    {
-                        //send the ping 4 times to the host and record the returned data.
-                        //The Send() method expects 4 items:
-                        //1) The IPAddress we are pinging
-                        //2) The timeout value
-                        //3) A buffer (our byte array)
-                        //4) PingOptions
-                        PingReply pingReply = ping.Send(address, 1000, buffer, pingOptions);
-
-                        //make sure we dont have a null reply
-                        if (!(pingReply == null))
-                        {
-                            switch (pingReply.Status)
-                            {
-                                case IPStatus.Success:
-                                    returnMessage = "Connected";
-                                    break;
-                                case IPStatus.TimedOut:
-                                    returnMessage = "Connection has timed out...";
-                                    break;
-                                default:
-                                    returnMessage = string.Format("Ping failed: {0}", pingReply.Status.ToString());
-                                    break;
-                            }
-                        }
-                        else
-                            returnMessage = "Connection failed for an unknown reason...";
-                    }
-                    catch (PingException ex)
-                    {
-                        returnMessage = string.Format("Connection Error: {0}", ex.Message);
-                    }
-                    catch (SocketException ex)
-                    {
-                        returnMessage = string.Format("Connection Error: {0}", ex.Message);
-                    }
-                }
-            }
-            else
-            {
-                returnMessage = "Connection failed";
-            }
-            //return the message
-            return returnMessage;
+            if (NetworkConfig.analyzeThread.ThreadState == ThreadState.Running)
+                NetworkConfig.analyzeThread.Join();
         }
-
-
+        /*-------------------------------------------------------------------*/
 
         #endregion
+
+
     }
 }

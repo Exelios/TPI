@@ -179,6 +179,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.Name = "gAndDForm";
             this.ShowIcon = false;
             this.Text = "GatherAndDeployC#";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.gAndDFormFormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
