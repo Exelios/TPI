@@ -65,10 +65,6 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         }
         /*--------------------------------------------------------------*/
 
-        #endregion
-
-        #region Class Methods
-
         /// <summary>
         /// Taken from this source:
         /// https://msdn.microsoft.com/en-us/library/bb762914(v=vs.110).aspx

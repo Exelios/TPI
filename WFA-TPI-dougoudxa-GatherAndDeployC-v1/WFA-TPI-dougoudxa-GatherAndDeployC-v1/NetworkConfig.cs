@@ -16,37 +16,32 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
+using System.IO;
 
 namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 {
     class NetworkConfig
     {
         #region Class attributes
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public const int roomAmount = 11;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public const int machineAmount = 17;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private static String[] roomListArray = { "N101", "N102", "N103", "N104", "N109", "N508b", "N509", "N510a", "N510b", "N511", "N512a" };
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public static String[] connectionStatusArray = { "Connected", "Disconnected", "Offline" };
         
         /// <summary>
         /// 
         /// </summary>
-        public static Thread analyzeThread = new Thread(update);
+        public const int machineAmount = 16;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static String[] roomListArray = { "N101", "N102", "N103", "N104", "N109", "N501", "N508b", "N509", "N510b", "N511", "N512a", "N512b" };
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static int roomAmount = roomListArray.Length;
+        /// <summary>
+        /// 
+        /// </summary>
+        public static String[] connectionStatusArray = { "Connected", "Disconnected", "Offline" };
 
         #endregion
 
@@ -90,47 +85,46 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             //create a new ping instance
             Ping ping = new Ping();
 
-            if (success)
-            {
-                //here we will ping the host 4 times (standard)
-                for (int i = 0; i < 1; i++)
-                {
-                    try
-                    {
-                        //send the ping 4 times to the host and record the returned data.
-                        //The Send() method expects 4 items:
-                        //1) The IPAddress we are pinging
-                        //2) The timeout value
-                        PingReply pingReply = ping.Send(address, 5);
+            byte[] buffer = new Byte[1];
 
-                        //make sure we dont have a null reply
-                        if (!(pingReply == null))
+            if (success)
+            {    
+                try
+                {
+                    //send the ping 4 times to the host and record the returned data.
+                    //The Send() method expects 4 items:
+                    //1) The IPAddress we are pinging
+                    //2) The timeout value
+                    PingReply pingReply = ping.Send(address, 2, buffer);
+
+                    //make sure we dont have a null reply
+                    if (!(pingReply == null))
+                    {
+                        switch (pingReply.Status)
                         {
-                            switch (pingReply.Status)
-                            {
-                                case IPStatus.Success:
-                                    returnMessage = connectionStatusArray[0];
-                                    break;
-                                case IPStatus.TimedOut:
-                                    returnMessage = connectionStatusArray[2];
-                                    break;
-                                default:
-                                    returnMessage = connectionStatusArray[2];
-                                    break;
-                            }
+                            case IPStatus.Success:
+                                returnMessage = connectionStatusArray[0];
+                                break;
+                            case IPStatus.TimedOut:
+                                returnMessage = connectionStatusArray[2];
+                                break;
+                            default:
+                                returnMessage = connectionStatusArray[2];
+                                break;
                         }
-                        else
-                            returnMessage = connectionStatusArray[2];
                     }
-                    catch (PingException ex)
-                    {
+                    else
                         returnMessage = connectionStatusArray[2];
-                    }
-                    catch (SocketException ex)
-                    {
-                        returnMessage = connectionStatusArray[2];
-                    }
                 }
+                catch (PingException ex)
+                {
+                    returnMessage = connectionStatusArray[2];
+                }
+                catch (SocketException ex)
+                {
+                    returnMessage = connectionStatusArray[2];
+                }
+                
             }
             else
             {
@@ -144,33 +138,15 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <summary>
         /// Method keeping the status of a host up to date.
         /// </summary>
-        private static void updateTargetStatus()
+        public static void updateTargetStatus(TargetHost target)
         {
-            String tempHostName;
+            String targetName = target.getTargetHostName();
+            
+            targetName = target.getTargetHostName().Split('\\')[2];
 
-            foreach (TargetHost target in gAndDForm.targetHostList)
-            {
-                tempHostName = target.getTargetHostName().Split('\\')[2];
-
-                target.setHostStatus(NetworkConfig.PingHost(tempHostName));
-            }
-
-            Thread.Sleep(3000);
+            target.setHostStatus(target.getTargetStatusLabel(), NetworkConfig.PingHost(targetName));
         }
         /*-------------------------------------------------------------------------------*/
-
-        private static void update()
-        {
-            while (true)
-            {
-                updateTargetStatus();
-            }
-        }
-
-        public static String getConnectionStatus(String hostName)
-        {
-            return null;
-        }
 
         #endregion
     }

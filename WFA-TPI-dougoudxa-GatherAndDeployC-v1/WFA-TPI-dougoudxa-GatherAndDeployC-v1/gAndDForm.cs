@@ -28,7 +28,22 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <summary>
         /// Variable necessary to stop synchronization process.
         /// </summary>
-        private bool stopSynchronization = false;
+        private static bool stopSynchronization = false;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static bool stopUpdating = true;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static Thread updateStatusThread = new Thread(updateTargets);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        String offlineHostNames = null;
 
         #endregion
 
@@ -69,6 +84,8 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="e"></param>
         private void synchronizeButtonClick(object sender, EventArgs e)
         {
+            offlineHostNames = null;    //empties the string.
+
             if (synchroniseButton.Text == "Synchronize")
             {
                 int index = 0;
@@ -94,6 +111,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                         synchronize(currentSource, target, existenceResults, index);
                         ++index;
                     }
+
+                    System.Windows.Forms.MessageBox.Show("The following hosts were unreachable : " 
+                        + Environment.NewLine + offlineHostNames, "Synchronization Status", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
                 //stopSynchronization = true;
@@ -158,7 +178,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             }
             else
             {
-                //System.Windows.Forms.MessageBox.Show("Host is " + currentStatus, targetHostList[index].getTargetHostName());
+                offlineHostNames += targetHostList[index].getTargetHostName() + "\n";
             }
         }
         /*------------------------------------------------------------------*/
@@ -171,16 +191,19 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="e"></param>
         private void analyseButtonClick(object sender, EventArgs e)
         {
-            //Not operationnal
-            //if(NetworkConfig.analyzeThread.ThreadState == ThreadState.Running)
-            //{
-            //    NetworkConfig.analyzeThread.Join();
-            //}
+            if (updateStatusThread.ThreadState == ThreadState.Running)
+            {
+                stopUpdating = true;
+
+                updateStatusThread.Abort();
+            }
 
             //Empties the hostPanel
             hostPanelContainer.Controls.Clear();
 
-            String tempRoom = Convert.ToString(roomListBox.SelectedItem);
+            targetHostList.Clear();
+
+            String tempRoom = Convert.ToString(roomListBox.SelectedItem).Substring(0,4);
 
             String tempHostName;
 
@@ -188,25 +211,44 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             {
                 tempHostName = "\\\\INF-" + tempRoom + "-" + (index + 1).ToString("00");
 
-                targetHostList.Add(new TargetHost(tempHostName, NetworkConfig.PingHost(tempHostName.Split('\\')[2]), index));
+                targetHostList.Add(new TargetHost(tempHostName, "Waiting for status...", index));
 
                 hostPanelContainer.Controls.Add(targetHostList[index].getTargetHostPanel());
             }
 
-            //Not operationnal
-            //NetworkConfig.analyzeThread.Start();
+            stopUpdating = false;
+
+            updateStatusThread.Start();
         }
         /*-----------------------------------------------------------------------------*/
 
         /// <summary>
         /// 
         /// </summary>
+        private static void updateTargets()
+        {
+            while (!stopUpdating)
+            {
+                foreach (TargetHost target in targetHostList)
+                {
+                    NetworkConfig.updateTargetStatus(target);
+                }
+
+                Thread.Sleep(3000);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="sender"></param>
-        /// <param name="e"></param>
+        ///// <param name="e"></param>
         private void gAndDFormFormClosing(object sender, FormClosingEventArgs e)
         {
-            if (NetworkConfig.analyzeThread.ThreadState == ThreadState.Running)
-                NetworkConfig.analyzeThread.Join();
+            stopUpdating = true;
+
+            if (updateStatusThread.ThreadState == ThreadState.Running)
+                updateStatusThread.Abort();
         }
         /*-------------------------------------------------------------------*/
 

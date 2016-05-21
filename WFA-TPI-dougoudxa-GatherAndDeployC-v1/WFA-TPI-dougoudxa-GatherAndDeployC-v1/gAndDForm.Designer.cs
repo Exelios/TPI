@@ -66,6 +66,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.sourcePathTextBox.Name = "sourcePathTextBox";
             this.sourcePathTextBox.Size = new System.Drawing.Size(256, 20);
             this.sourcePathTextBox.TabIndex = 1;
+            //For testing puposes only
+            this.sourcePathTextBox.Text = @"C:\Users\Win10Rsync\Desktop\";
+
             // 
             // targetPathLabel
             // 
@@ -83,6 +86,8 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.targetPathTextBox.Name = "targetPathTextBox";
             this.targetPathTextBox.Size = new System.Drawing.Size(256, 20);
             this.targetPathTextBox.TabIndex = 3;
+            //For testing purposes only
+            this.targetPathTextBox.Text = @"C:\Users\Public\";
             // 
             // analyseButton
             // 
@@ -179,7 +184,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.Name = "gAndDForm";
             this.ShowIcon = false;
             this.Text = "GatherAndDeployC#";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.gAndDFormFormClosing);
+            //this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.gAndDFormFormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 

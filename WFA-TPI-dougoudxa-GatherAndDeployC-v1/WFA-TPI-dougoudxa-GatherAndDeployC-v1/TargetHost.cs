@@ -76,7 +76,14 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <summary>
         /// Width of targetHost's panel.
         /// </summary>
-        private const int PANEL_WIDTH = 183;
+        private const int PANEL_WIDTH = 197;
+
+        /// <summary>
+        /// Needed from http://stackoverflow.com/questions/14703698/invokedelegate
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="newStatus"></param>
+        public delegate void crossThreadUpdate(Control label, String newStatus);
         
         #endregion
 
@@ -148,13 +155,32 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
         /// <summary>
         /// Sets new value for the host's status.
+        /// http://stackoverflow.com/questions/14703698/invokedelegate
         /// </summary>
         /// <param name="newStatus">New status overwriting the old one</param>
-        public void setHostStatus(string newStatus)
+        public void setHostStatus(Control statusLabel, string newStatus)
         {
-            this.hostStatus = TargetHost.STATUS_TEXT + newStatus;
+            if (!statusLabel.InvokeRequired)
+            {
+                this.hostStatus = TargetHost.STATUS_TEXT + newStatus;
+
+                statusLabel.Text = this.hostStatus;
+            }
+            else
+            {
+                statusLabel.Invoke(new crossThreadUpdate(setHostStatus), new object[] { statusLabel, newStatus });
+            }
         }
         /*------------------------------------------------*/
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Control getTargetStatusLabel()
+        {
+            return hostStatusLabel;
+        }
 
         /// <summary>
         /// Updates the host's different attributes in the main form.
