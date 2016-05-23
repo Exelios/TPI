@@ -7,10 +7,6 @@
 /// Summary:    Class designed to represent Host with their names and status.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
@@ -59,6 +55,11 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         private Label hostStatusLabel = new Label();
 
         /// <summary>
+        /// 
+        /// </summary>
+        private CheckBox syncHostCheckBox = new CheckBox();
+
+        /// <summary>
         /// Height of the labels in the targetHost labels.
         /// </summary>
         private const int LABEL_HEIGHT = 13;
@@ -71,7 +72,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <summary>
         /// Height of targetHost's panel.
         /// </summary>
-        private const int PANEL_HEIGHT = 35;
+        private const int PANEL_HEIGHT = 50;
 
         /// <summary>
         /// Width of targetHost's panel.
@@ -119,16 +120,21 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             hostStatusLabel.Text = hostStatus;
 
             //Sizing the 2 labels
-            hostNameLabel.Size = new System.Drawing.Size(LABEL_WIDTH, LABEL_HEIGHT);
-            hostStatusLabel.Size = new System.Drawing.Size(LABEL_WIDTH - 20, LABEL_HEIGHT);
+            hostNameLabel.Size = new System.Drawing.Size(LABEL_WIDTH - 80, LABEL_HEIGHT);
+            hostStatusLabel.Size = new System.Drawing.Size(LABEL_WIDTH - 50, LABEL_HEIGHT);
 
             //Positionning the labels in the targetHostPanel
             hostNameLabel.Location = new System.Drawing.Point(0, 0);
             hostStatusLabel.Location = new System.Drawing.Point(20, 14);
 
+            //Positionning and initializing the checkbox
+            syncHostCheckBox.Location = new System.Drawing.Point(150, 0);
+            syncHostCheckBox.Text = "Sync";
+
             //Adding the controls in the panel
             hostPanel.Controls.Add(hostNameLabel);
             hostPanel.Controls.Add(hostStatusLabel);
+            hostPanel.Controls.Add(syncHostCheckBox);
 
         }
         /*----------------------------------------------------*/
@@ -220,6 +226,32 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             hostPath = newTargetPath;
         }
         /*--------------------------------------------------------*/
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public bool getSyncCheckBoxStatus()
+        {
+            if (syncHostCheckBox.Checked)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        /*--------------------------------------------------------*/
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void setCheckSyncCheckBox()
+        {
+            syncHostCheckBox.Checked = true;
+        }
+        /*-------------------------------------*/
         #endregion
     }
 }

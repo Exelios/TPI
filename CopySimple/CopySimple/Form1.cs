@@ -20,7 +20,13 @@ namespace CopySimple
 
         private void button1_Click(object sender, EventArgs e)
         {
-            File.Copy(@"C:\Users\Win10Rsync\Desktop\elf2.jpg", @"\\WIN10-TPI-CLI-1\Users\Public\toto.jpg");
+            // File.Copy(@"C:\Users\Win10Rsync\Desktop\elf2.jpg", @"\\WIN10-TPI-CLI-1\Users\Public\toto.jpg");
+
+            
+
+            
+
+            progressBar1.Value += 1;
         }
     }
 }

@@ -8,15 +8,9 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
-using System.IO;
 
 namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 {
@@ -73,6 +67,8 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
             IPAddress address = null;
 
+            int timeOut = 3000;
+
             try
             {
                 address = Dns.GetHostEntry(host).AddressList[0];
@@ -84,18 +80,18 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
             //create a new ping instance
             Ping ping = new Ping();
+            
 
-            byte[] buffer = new Byte[1];
+            byte[] buffer = new Byte[32];
 
             if (success)
             {    
                 try
                 {
-                    //send the ping 4 times to the host and record the returned data.
-                    //The Send() method expects 4 items:
                     //1) The IPAddress we are pinging
                     //2) The timeout value
-                    PingReply pingReply = ping.Send(address, 2, buffer);
+                    //3) Buffer size.
+                    PingReply pingReply = ping.Send(address, timeOut, buffer);
 
                     //make sure we dont have a null reply
                     if (!(pingReply == null))
@@ -132,6 +128,8 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             }
             //return the message
             return returnMessage;
+
+
         }
         /*-----------------------------------------------------------------------------------*/
 

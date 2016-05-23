@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
@@ -21,6 +15,11 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         public static List<TargetHost> targetHostList = new List<TargetHost>();
 
         /// <summary>
+        /// List of update threads updating an individual host.
+        /// </summary>
+        public static List<Thread> updateThreadList = new List<Thread>();
+
+        /// <summary>
         /// Source is needed for file/directory transfers. Instanciated.
         /// </summary>
         private SourceHost currentSource = new SourceHost();
@@ -33,17 +32,12 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <summary>
         /// 
         /// </summary>
-        private static bool stopUpdating = true;
+        private volatile static bool stopUpdating = true;
 
         /// <summary>
         /// 
         /// </summary>
-        private static Thread updateStatusThread = new Thread(updateTargets);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        String offlineHostNames = null;
+        private static String offlineHostNames = null;
 
         #endregion
 
@@ -168,9 +162,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             //Shares file / directory and asks if we want to overwrite an existing file / directory 
             //Works for connected hosts.
 
-            String currentStatus = target.getHostStatus();
-
-            if (currentStatus == NetworkConfig.connectionStatusArray[0]+ ' ')
+            if (target.getHostStatus() == NetworkConfig.connectionStatusArray[0] + ' ' && target.getSyncCheckBoxStatus())
             {
                 source.share(sourcePathTextBox.Text,
                     targetHostList[index].getTargetHostName() + targetPathTextBox.Text.Substring(2),
@@ -178,82 +170,119 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             }
             else
             {
-                offlineHostNames += targetHostList[index].getTargetHostName() + "\n";
+                offlineHostNames = "No online hosts selected";
             }
         }
         /*------------------------------------------------------------------*/
         
 
         /// <summary>
-        /// 
+        /// Method handling the "analyzeButton click" event.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void analyseButtonClick(object sender, EventArgs e)
         {
-            if (updateStatusThread.ThreadState == ThreadState.Running)
-            {
-                stopUpdating = true;
-
-                updateStatusThread.Abort();
-            }
-
             //Empties the hostPanel
             hostPanelContainer.Controls.Clear();
 
             targetHostList.Clear();
 
-            String tempRoom = Convert.ToString(roomListBox.SelectedItem).Substring(0,4);
+            String tempRoom;
+
+            //To only get the first four charactors
+            if (Convert.ToString(roomListBox.SelectedItem).Length > 3)
+            {
+                tempRoom = Convert.ToString(roomListBox.SelectedItem).Substring(0, 4);
+            }
+            else
+            {
+                tempRoom = Convert.ToString(roomListBox.SelectedItem);
+            }
 
             String tempHostName;
 
-            for (int index = 0; index < NetworkConfig.machineAmount; ++index)
+            for (int index = 0; index < NetworkConfig.machineAmount; index++)
             {
                 tempHostName = "\\\\INF-" + tempRoom + "-" + (index + 1).ToString("00");
 
-                targetHostList.Add(new TargetHost(tempHostName, "Waiting for status...", index));
+                targetHostList.Add(new TargetHost(tempHostName, "Pinging...", index));
 
                 hostPanelContainer.Controls.Add(targetHostList[index].getTargetHostPanel());
             }
-
             stopUpdating = false;
 
-            updateStatusThread.Start();
+            startUpdateThreads();
+
+            //for(int index = 0; index < NetworkConfig.machineAmount; ++index)
+            //{
+            //    updateThreadList[index].Start();
+            //}
         }
         /*-----------------------------------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Method starting the status update threads. Used for parameterized start.
+        /// http://stackoverflow.com/questions/1195896/threadstart-with-parameters
         /// </summary>
-        private static void updateTargets()
+        private static void updateTargets(object index)
         {
             while (!stopUpdating)
             {
-                foreach (TargetHost target in targetHostList)
-                {
-                    NetworkConfig.updateTargetStatus(target);
-                }
+                NetworkConfig.updateTargetStatus(targetHostList[(int)index]);
 
                 Thread.Sleep(3000);
             }
         }
+        /*-----------------------------------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Method starting the update threads.
+        /// </summary>
+        private static void startUpdateThreads()
+        {
+            //Empties the updateThreadList
+            updateThreadList.Clear();
+            GC.Collect();
+
+            //Creates and starts the new threads
+            for (int startIndex = 0; startIndex < targetHostList.Count; startIndex++)
+            {
+                //http://stackoverflow.com/questions/1195896/threadstart-with-parameters
+                //Spencer Ruport's answer led to this solution.
+                Thread thread = new Thread(updateTargets);
+                thread.Name = targetHostList[startIndex].getTargetHostName();
+                
+                updateThreadList.Add(thread);
+                
+                updateThreadList[startIndex].Start(startIndex);
+            }
+        }
+        /*-----------------------------------------------------------------------------------------*/
+
+        /// <summary>
+        /// Method handelong the form closing procedure.
         /// </summary>
         /// <param name="sender"></param>
-        ///// <param name="e"></param>
+        /// <param name="e"></param>
         private void gAndDFormFormClosing(object sender, FormClosingEventArgs e)
         {
             stopUpdating = true;
 
-            if (updateStatusThread.ThreadState == ThreadState.Running)
-                updateStatusThread.Abort();
+            for(int index = 0; index < updateThreadList.Count; index++)
+            {
+                if (updateThreadList[index].IsAlive)
+                {
+                    updateThreadList[index].Join();
+                }
+            }
+            updateThreadList.Clear();
+
+            this.Close();
         }
         /*-------------------------------------------------------------------*/
 
         #endregion
-
-
+        
     }
 }

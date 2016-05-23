@@ -67,7 +67,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.sourcePathTextBox.Size = new System.Drawing.Size(256, 20);
             this.sourcePathTextBox.TabIndex = 1;
             //For testing puposes only
-            this.sourcePathTextBox.Text = @"C:\Users\Win10Rsync\Desktop\";
+            this.sourcePathTextBox.Text = @"C:\Users\Win10Rsync\Desktop\PBS-SpaceTime";
 
             // 
             // targetPathLabel
@@ -87,7 +87,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.targetPathTextBox.Size = new System.Drawing.Size(256, 20);
             this.targetPathTextBox.TabIndex = 3;
             //For testing purposes only
-            this.targetPathTextBox.Text = @"C:\Users\Public\";
+            this.targetPathTextBox.Text = @"C:\Users\Public\PBS-SpaceTime";
             // 
             // analyseButton
             // 
