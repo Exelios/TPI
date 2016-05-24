@@ -106,8 +106,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                         ++index;
                     }
 
-                    System.Windows.Forms.MessageBox.Show("The following hosts were unreachable : " 
-                        + Environment.NewLine + offlineHostNames, "Synchronization Status", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    //Will contain error message in the future.
+                    //System.Windows.Forms.MessageBox.Show("The following hosts were unreachable : " 
+                    //    + Environment.NewLine + offlineHostNames, "Synchronization Status", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
                 //stopSynchronization = true;
