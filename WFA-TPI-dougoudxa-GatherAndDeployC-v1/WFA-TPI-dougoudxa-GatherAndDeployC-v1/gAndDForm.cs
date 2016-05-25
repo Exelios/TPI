@@ -30,12 +30,12 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         private static bool stopSynchronization = false;
 
         /// <summary>
-        /// 
+        /// Variable allowing or stopping the status update of all the hosts.
         /// </summary>
         private volatile static bool stopUpdating = true;
 
         /// <summary>
-        /// 
+        /// String containing the names of all the offline hosts.
         /// </summary>
         private static String offlineHostNames = null;
 
@@ -53,7 +53,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             //Loop writing all the rooms in the establishment.
             for (int index = 0; index < NetworkConfig.roomAmount; ++index)
             {
-                roomListBox.Items.Add(NetworkConfig.getRoom(index));
+                roomComboBox.Items.Add(NetworkConfig.getRoom(index));
             }
             
 
@@ -80,11 +80,11 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         {
             offlineHostNames = null;    //empties the string.
 
-            if (synchroniseButton.Text == "Synchronize")
+            if (synchronizeButton.Text == "Synchronize")
             {
                 int index = 0;
                 
-                synchroniseButton.Text = "Interrupt";
+                synchronizeButton.Text = "Interrupt";
                 //stopSynchronization = false;
 
                 //Checks if the source exists
@@ -112,12 +112,12 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 }
 
                 //stopSynchronization = true;
-                synchroniseButton.Text = "Synchronize";
+                synchronizeButton.Text = "Synchronize";
             }
             else
             {
                 //stopSynchronization = true;
-                synchroniseButton.Text = "Synchronize";
+                synchronizeButton.Text = "Synchronize";
             }
         }
         /*---------------------------------------------------------------*/
@@ -163,7 +163,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             //Shares file / directory and asks if we want to overwrite an existing file / directory 
             //Works for connected hosts.
 
-            if (target.getHostStatus() == NetworkConfig.connectionStatusArray[0] + ' ' && target.getSyncCheckBoxStatus())
+            if (target.getHostStatus() == NetworkConfig.connectionStatusArray[0] + ' ' && target.getSyncCheckBoxState())
             {
                 source.share(sourcePathTextBox.Text,
                     targetHostList[index].getTargetHostName() + targetPathTextBox.Text.Substring(2),
@@ -182,7 +182,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void analyseButtonClick(object sender, EventArgs e)
+        private void analyzeButtonClick(object sender, EventArgs e)
         {
             //Empties the hostPanel
             hostPanelContainer.Controls.Clear();
@@ -192,18 +192,18 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             String tempRoom;
 
             //To only get the first four charactors
-            if (Convert.ToString(roomListBox.SelectedItem).Length > 3)
+            if (Convert.ToString(roomComboBox.SelectedItem).Length > 3)
             {
-                tempRoom = Convert.ToString(roomListBox.SelectedItem).Substring(0, 4);
+                tempRoom = Convert.ToString(roomComboBox.SelectedItem).Substring(0, 4);
             }
             else
             {
-                tempRoom = Convert.ToString(roomListBox.SelectedItem);
+                tempRoom = Convert.ToString(roomComboBox.SelectedItem);
             }
 
             String tempHostName;
 
-            for (int index = 0; index < NetworkConfig.machineAmount; index++)
+            for (int index = 0; index < NetworkConfig.MACHINE_AMOUNT; index++)
             {
                 tempHostName = "\\\\INF-" + tempRoom + "-" + (index + 1).ToString("00");
 
@@ -211,7 +211,6 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
                 hostPanelContainer.Controls.Add(targetHostList[index].getTargetHostPanel());
             }
-            stopUpdating = false;
 
             startUpdateThreads();
 
@@ -228,12 +227,11 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// </summary>
         private static void updateTargets(object index)
         {
-            while (!stopUpdating)
-            {
-                NetworkConfig.updateTargetStatus(targetHostList[(int)index]);
+            //Updating the status
+            NetworkConfig.updateTargetStatus(targetHostList[(int)index]);
 
-                Thread.Sleep(3000);
-            }
+            //Updating the checkbox
+            targetHostList[(int)index].setSyncCheckBoxState(targetHostList[(int)index].getSyncCheckBox());
         }
         /*-----------------------------------------------------------------------------*/
 
@@ -243,8 +241,10 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         private static void startUpdateThreads()
         {
             //Empties the updateThreadList
-            updateThreadList.Clear();
-            GC.Collect();
+            if (updateThreadList.Count != 0)
+            {
+                cleanUpdateThreads();
+            }
 
             //Creates and starts the new threads
             for (int startIndex = 0; startIndex < targetHostList.Count; startIndex++)
@@ -262,26 +262,36 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*-----------------------------------------------------------------------------------------*/
 
         /// <summary>
+        /// Cleans all the updateThreads.
+        /// </summary>
+        private static void cleanUpdateThreads()
+        {
+            for (int index = 0; index < updateThreadList.Count; index++)
+            {
+                if (updateThreadList[index].IsAlive)
+                {
+                    updateThreadList[index].Join();
+
+                    updateThreadList[index] = null;
+                }
+            }
+            updateThreadList.Clear();
+        }
+        /*--------------------------------------------------------------------------------*/
+
+        /// <summary>
         /// Method handelong the form closing procedure.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void gAndDFormFormClosing(object sender, FormClosingEventArgs e)
         {
-            stopUpdating = true;
-
-            for(int index = 0; index < updateThreadList.Count; index++)
-            {
-                if (updateThreadList[index].IsAlive)
-                {
-                    updateThreadList[index].Join();
-                }
-            }
-            updateThreadList.Clear();
+            cleanUpdateThreads();
 
             this.Close();
         }
         /*-------------------------------------------------------------------*/
+
 
         #endregion
         

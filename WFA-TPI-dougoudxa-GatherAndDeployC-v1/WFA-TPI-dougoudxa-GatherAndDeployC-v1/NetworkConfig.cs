@@ -19,21 +19,22 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         #region Class attributes
         
         /// <summary>
-        /// 
+        /// Number of machines per classroom.
         /// </summary>
-        public const int machineAmount = 16;
+        public const int MACHINE_AMOUNT = 16;
 
         /// <summary>
-        /// 
+        /// Array of strings representing the differents classrooms at ETML.
         /// </summary>
         private static String[] roomListArray = { "N101", "N102", "N103", "N104", "N109", "N501", "N508b", "N509", "N510b", "N511", "N512a", "N512b" };
 
         /// <summary>
-        /// 
+        /// Number of rooms at ETML.
         /// </summary>
         public static int roomAmount = roomListArray.Length;
+
         /// <summary>
-        /// 
+        /// Array containing the different connection statuses.
         /// </summary>
         public static String[] connectionStatusArray = { "Connected", "Disconnected", "Offline" };
 
@@ -42,10 +43,10 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         #region Class methods
 
         /// <summary>
-        /// 
+        /// Gets the room name.
         /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
+        /// <param name="index">Index for the list</param>
+        /// <returns>String room name</returns>
         public static String getRoom(int index)
         {
             return roomListArray[index];
@@ -53,14 +54,15 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*---------------------------------------------------------------------*/
 
         /// <summary>
+        /// Method that pings a host and returns a status string
         /// http://stackoverflow.com/questions/3689728/ping-a-hostname-on-the-network
         /// </summary>
-        /// <param name="host"></param>
-        /// <returns></returns>
-        public static string PingHost(string host)
+        /// <param name="host">The target host getting pinged</param>
+        /// <returns>Status string message</returns>
+        public static String pingHost(String host)
         {
             //string to hold our return messge
-            string returnMessage = string.Empty;
+            String returnMessage = String.Empty;
 
             //IPAddress instance for holding the returned host
             bool success = true;
@@ -142,7 +144,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             
             targetName = target.getTargetHostName().Split('\\')[2];
 
-            target.setHostStatus(target.getTargetStatusLabel(), NetworkConfig.PingHost(targetName));
+            target.setHostStatus(target.getTargetStatusLabel(), NetworkConfig.pingHost(targetName));
         }
         /*-------------------------------------------------------------------------------*/
 

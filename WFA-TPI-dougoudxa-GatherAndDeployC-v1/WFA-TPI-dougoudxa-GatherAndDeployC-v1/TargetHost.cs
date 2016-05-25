@@ -22,17 +22,17 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// First characters in hostStatus String. 
         /// Is of constant value.
         /// </summary>
-        private const string STATUS_TEXT = "Status: ";
+        private const String STATUS_TEXT = "Status: ";
 
         /// <summary>
         /// Contains the host's name.
         /// </summary>
-        private string hostName;
+        private String hostName;
 
         /// <summary>
         /// contains the host's status.
         /// </summary>
-        private string hostStatus;
+        private String hostStatus;
 
         /// <summary>
         /// Path of destination for incoming file/directory transfers
@@ -55,7 +55,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         private Label hostStatusLabel = new Label();
 
         /// <summary>
-        /// 
+        /// Included in the hostPanel
         /// </summary>
         private CheckBox syncHostCheckBox = new CheckBox();
 
@@ -82,9 +82,15 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <summary>
         /// Needed from http://stackoverflow.com/questions/14703698/invokedelegate
         /// </summary>
-        /// <param name="label"></param>
-        /// <param name="newStatus"></param>
-        public delegate void crossThreadUpdate(Control label, String newStatus);
+        /// <param name="label">Label needing a sync</param>
+        /// <param name="newStatus">New label text</param>
+        public delegate void crossThreadUpdateStatus(Control label, String newStatus);
+
+        /// <summary>
+        /// Delegate needed to sync the syncCheckBox from foreign thread
+        /// </summary>
+        /// <param name="checkBox">CheckBox needing to be synced</param>
+        public delegate void crossThreadUpdateCheckBox(CheckBox checkBox);
         
         #endregion
 
@@ -95,7 +101,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// </summary>
         /// <param name="hostNameInput">Name given to this targetHost by another class of the application</param>
         /// <param name="hostStatusInput">Status given to this targetHost by another class of the application</param>
-        public TargetHost(string hostNameInput, string hostStatusInput, int index)
+        public TargetHost(String hostNameInput, String hostStatusInput, int index)
         {
             this.hostName = hostNameInput;
             this.hostStatus = STATUS_TEXT + hostStatusInput;
@@ -143,11 +149,11 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// Gets the host's current status.
         /// </summary>
         /// <returns>Host current status</returns>
-        public string getHostStatus()
+        public String getHostStatus()
         {
-            string[] returnStatArray = this.hostStatus.Split(' ');
+            String[] returnStatArray = this.hostStatus.Split(' ');
 
-            string returnStatus = "";
+            String returnStatus = "";
 
             //appends every substring to the status string. Skips the first one which is STATUS_TEXT.
             for(int index = 1; index < returnStatArray.Length; ++index)
@@ -164,7 +170,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// http://stackoverflow.com/questions/14703698/invokedelegate
         /// </summary>
         /// <param name="newStatus">New status overwriting the old one</param>
-        public void setHostStatus(Control statusLabel, string newStatus)
+        public void setHostStatus(Control statusLabel, String newStatus)
         {
             if (!statusLabel.InvokeRequired)
             {
@@ -174,15 +180,15 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             }
             else
             {
-                statusLabel.Invoke(new crossThreadUpdate(setHostStatus), new object[] { statusLabel, newStatus });
+                statusLabel.Invoke(new crossThreadUpdateStatus(setHostStatus), new object[] { statusLabel, newStatus });
             }
         }
         /*------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Gets the status label of a host.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Control statusLabel</returns>
         public Control getTargetStatusLabel()
         {
             return hostStatusLabel;
@@ -218,7 +224,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*---------------------------------------------------*/
 
         /// <summary>
-        /// Sets a new target path to host
+        /// Sets a new target path to host.
         /// </summary>
         /// <param name="newTargetPath">New path</param>
         public void setTargetPath(String newTargetPath)
@@ -228,10 +234,10 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*--------------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Gets the checked state of a CheckBox.
         /// </summary>
-        /// <returns></returns>
-        public bool getSyncCheckBoxStatus()
+        /// <returns>True if CheckBox checked, otherwise false.</returns>
+        public bool getSyncCheckBoxState()
         {
             if (syncHostCheckBox.Checked)
             {
@@ -245,11 +251,35 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*--------------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Gets the syncHostCheckBox.
         /// </summary>
-        public void setCheckSyncCheckBox()
+        /// <returns>the currents hosts checkBox</returns>
+        public CheckBox getSyncCheckBox()
         {
-            syncHostCheckBox.Checked = true;
+            return syncHostCheckBox;
+        }
+        /*------------------------------------------------------------------*/
+
+        /// <summary>
+        /// Sets the checkBox state to a new state.
+        /// </summary>
+        public void setSyncCheckBoxState(CheckBox checkBox)
+        {
+            if (!syncHostCheckBox.InvokeRequired)
+            {
+                if (this.getTargetStatusLabel().Text.Split(' ')[1] == NetworkConfig.connectionStatusArray[0])
+                {
+                    checkBox.Checked = true;
+                }
+                else
+                {
+                    checkBox.Checked = false;
+                }
+            }
+            else
+            {
+                checkBox.Invoke(new crossThreadUpdateCheckBox(setSyncCheckBoxState), new object[] { checkBox });
+            }
         }
         /*-------------------------------------*/
         #endregion

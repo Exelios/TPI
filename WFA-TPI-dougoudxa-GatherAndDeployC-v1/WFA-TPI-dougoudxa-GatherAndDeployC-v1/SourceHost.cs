@@ -66,7 +66,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="sourceDirectoryPath"></param>
         /// <param name="TargetDirectoryPath"></param>
         /// <param name="copySubdirectories"></param>
-        private static void DirectoryCopy(string sourceDirectoryPath, string TargetDirectoryPath, bool copySubdirectories)
+        private static void copyDirectory(String sourceDirectoryPath, String TargetDirectoryPath, bool copySubdirectories)
         {
             // Get the subdirectories for the specified directory.
             DirectoryInfo dir = new DirectoryInfo(sourceDirectoryPath);
@@ -82,7 +82,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             FileInfo[] files = dir.GetFiles();
             foreach (FileInfo file in files)
             {
-                string tempPath = Path.Combine(TargetDirectoryPath, file.Name);
+                String tempPath = Path.Combine(TargetDirectoryPath, file.Name);
                 file.CopyTo(tempPath, true);
             }
 
@@ -92,8 +92,8 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             {
                 foreach (DirectoryInfo subdir in dirs)
                 {
-                    string temppath = Path.Combine(TargetDirectoryPath, subdir.Name);
-                    DirectoryCopy(subdir.FullName, temppath, copySubdirectories);
+                    String temppath = Path.Combine(TargetDirectoryPath, subdir.Name);
+                    copyDirectory(subdir.FullName, temppath, copySubdirectories);
                 }
             }
         }
@@ -187,7 +187,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 //Directories aren't the same in last modification time.
                 if (!compareExisting("directory", sourcePath, targetPath))
                 {
-                    DirectoryCopy(sourcePath, targetPath, true);
+                    copyDirectory(sourcePath, targetPath, true);
                 }
                 else
                 {
@@ -209,7 +209,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
                     if(result == System.Windows.Forms.DialogResult.Yes)
                     {
-                        DirectoryCopy(sourcePath, targetPath, true);
+                        copyDirectory(sourcePath, targetPath, true);
                     }
                 }
             }

@@ -40,12 +40,12 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.sourcePathTextBox = new System.Windows.Forms.TextBox();
             this.targetPathLabel = new System.Windows.Forms.Label();
             this.targetPathTextBox = new System.Windows.Forms.TextBox();
-            this.analyseButton = new System.Windows.Forms.Button();
-            this.synchroniseButton = new System.Windows.Forms.Button();
+            this.analyzeButton = new System.Windows.Forms.Button();
+            this.synchronizeButton = new System.Windows.Forms.Button();
             this.targetHostLabel = new System.Windows.Forms.Label();
             this.hostPanelContainer = new System.Windows.Forms.Panel();
-            this.roomListBox = new System.Windows.Forms.ListBox();
-            this.roomListBoxLabel = new System.Windows.Forms.Label();
+            this.roomComboBox = new System.Windows.Forms.ComboBox();
+            this.roomComboBoxLabel = new System.Windows.Forms.Label();
             this.manualHostTextBox = new System.Windows.Forms.TextBox();
             this.manualHostTextBoxLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -91,23 +91,23 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             // 
             // analyseButton
             // 
-            this.analyseButton.Location = new System.Drawing.Point(84, 423);
-            this.analyseButton.Name = "analyseButton";
-            this.analyseButton.Size = new System.Drawing.Size(75, 23);
-            this.analyseButton.TabIndex = 5;
-            this.analyseButton.Text = "Analyze";
-            this.analyseButton.UseVisualStyleBackColor = true;
-            this.analyseButton.Click += new System.EventHandler(this.analyseButtonClick);
+            this.analyzeButton.Location = new System.Drawing.Point(84, 423);
+            this.analyzeButton.Name = "analyseButton";
+            this.analyzeButton.Size = new System.Drawing.Size(75, 23);
+            this.analyzeButton.TabIndex = 5;
+            this.analyzeButton.Text = "Analyze";
+            this.analyzeButton.UseVisualStyleBackColor = true;
+            this.analyzeButton.Click += new System.EventHandler(this.analyzeButtonClick);
             // 
             // synchroniseButton
             // 
-            this.synchroniseButton.Location = new System.Drawing.Point(198, 423);
-            this.synchroniseButton.Name = "synchroniseButton";
-            this.synchroniseButton.Size = new System.Drawing.Size(75, 23);
-            this.synchroniseButton.TabIndex = 6;
-            this.synchroniseButton.Text = "Synchronize";
-            this.synchroniseButton.UseVisualStyleBackColor = true;
-            this.synchroniseButton.Click += new System.EventHandler(this.synchronizeButtonClick);
+            this.synchronizeButton.Location = new System.Drawing.Point(198, 423);
+            this.synchronizeButton.Name = "synchroniseButton";
+            this.synchronizeButton.Size = new System.Drawing.Size(75, 23);
+            this.synchronizeButton.TabIndex = 6;
+            this.synchronizeButton.Text = "Synchronize";
+            this.synchronizeButton.UseVisualStyleBackColor = true;
+            this.synchronizeButton.Click += new System.EventHandler(this.synchronizeButtonClick);
             // 
             // targetHostLabel
             // 
@@ -130,20 +130,20 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             // 
             // roomListBox
             // 
-            this.roomListBox.FormattingEnabled = true;
-            this.roomListBox.Location = new System.Drawing.Point(5, 103);
-            this.roomListBox.Name = "roomListBox";
-            this.roomListBox.Size = new System.Drawing.Size(120, 30);
-            this.roomListBox.TabIndex = 9;
+            this.roomComboBox.FormattingEnabled = true;
+            this.roomComboBox.Location = new System.Drawing.Point(5, 103);
+            this.roomComboBox.Name = "roomListBox";
+            this.roomComboBox.Size = new System.Drawing.Size(120, 30);
+            this.roomComboBox.TabIndex = 9;
             // 
             // roomListBoxLabel
             // 
-            this.roomListBoxLabel.AutoSize = true;
-            this.roomListBoxLabel.Location = new System.Drawing.Point(48, 87);
-            this.roomListBoxLabel.Name = "roomListBoxLabel";
-            this.roomListBoxLabel.Size = new System.Drawing.Size(35, 13);
-            this.roomListBoxLabel.TabIndex = 10;
-            this.roomListBoxLabel.Text = "Room";
+            this.roomComboBoxLabel.AutoSize = true;
+            this.roomComboBoxLabel.Location = new System.Drawing.Point(48, 87);
+            this.roomComboBoxLabel.Name = "roomListBoxLabel";
+            this.roomComboBoxLabel.Size = new System.Drawing.Size(35, 13);
+            this.roomComboBoxLabel.TabIndex = 10;
+            this.roomComboBoxLabel.Text = "Room";
             // 
             // manualHostTextBox
             // 
@@ -169,12 +169,12 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.ClientSize = new System.Drawing.Size(355, 458);
             this.Controls.Add(this.manualHostTextBoxLabel);
             this.Controls.Add(this.manualHostTextBox);
-            this.Controls.Add(this.roomListBoxLabel);
-            this.Controls.Add(this.roomListBox);
+            this.Controls.Add(this.roomComboBoxLabel);
+            this.Controls.Add(this.roomComboBox);
             this.Controls.Add(this.hostPanelContainer);
             this.Controls.Add(this.targetHostLabel);
-            this.Controls.Add(this.synchroniseButton);
-            this.Controls.Add(this.analyseButton);
+            this.Controls.Add(this.synchronizeButton);
+            this.Controls.Add(this.analyzeButton);
             this.Controls.Add(this.targetPathTextBox);
             this.Controls.Add(this.targetPathLabel);
             this.Controls.Add(this.sourcePathLabel);
@@ -196,12 +196,12 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         private System.Windows.Forms.TextBox sourcePathTextBox;
         private System.Windows.Forms.Label targetPathLabel;
         private System.Windows.Forms.TextBox targetPathTextBox;
-        private System.Windows.Forms.Button analyseButton;
-        private System.Windows.Forms.Button synchroniseButton;
+        private System.Windows.Forms.Button analyzeButton;
+        private System.Windows.Forms.Button synchronizeButton;
         private System.Windows.Forms.Label targetHostLabel;
         private System.Windows.Forms.Panel hostPanelContainer;
-        private System.Windows.Forms.ListBox roomListBox;
-        private System.Windows.Forms.Label roomListBoxLabel;
+        private System.Windows.Forms.ComboBox roomComboBox;
+        private System.Windows.Forms.Label roomComboBoxLabel;
         private System.Windows.Forms.TextBox manualHostTextBox;
         private System.Windows.Forms.Label manualHostTextBoxLabel;
     }
