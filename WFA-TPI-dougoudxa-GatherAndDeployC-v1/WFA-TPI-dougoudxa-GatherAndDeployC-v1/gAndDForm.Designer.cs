@@ -188,6 +188,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.logSaveButton.TabIndex = 15;
             this.logSaveButton.Text = "Save";
             this.logSaveButton.UseVisualStyleBackColor = true;
+            this.logSaveButton.Click += new System.EventHandler(this.logSaveButtonClick);
             // 
             // sourceInfoLabel
             // 

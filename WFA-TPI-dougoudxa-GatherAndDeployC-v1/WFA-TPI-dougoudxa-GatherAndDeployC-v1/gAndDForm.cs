@@ -101,18 +101,18 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 }
                 else
                 {
-                    logTextBox.AppendText("Deploying : " + fileNameArray[fileNameArray.Length - 1] + "\n");
+                    logTextBox.AppendText("Deploying : " + fileNameArray[fileNameArray.Length - 1] + ":" + Environment.NewLine);
 
                     //Transfers file/directory to every host chosen.
                     foreach (TargetHost target in targetHostList)
                     {
                         if (target.getSyncCheckBoxState())
                         {
-                            logTextBox.AppendText(targetHostList[index].getTargetHostName() + " updating... ");
+                            logTextBox.AppendText(targetHostList[index].getTargetHostName() + " syncing... " + Environment.NewLine);
 
                             synchronize(currentSource, target, existenceResults, index);
 
-                            logTextBox.AppendText("Done " + "" +  "\n");
+                            logTextBox.AppendText("\tDone " + DateTime.Now.ToShortDateString() + ' ' + DateTime.Now.ToLongTimeString() + Environment.NewLine);
                         }
 
                         ++index;
@@ -480,7 +480,24 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         }
         /*-------------------------------------------------------------------*/
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void logSaveButtonClick(object sender, EventArgs e)
+        {
+            String logFilePath = "C:\\Users\\" + (String)Environment.UserName + "\\Desktop\\g&d_log.txt";
+
+            FileStream stream = new FileStream(logFilePath, FileMode.Create);
+
+            StreamWriter write = new StreamWriter(stream, System.Text.Encoding.Default);
+            write.Write(logTextBox.Text);
+
+            write.Close();
+        }
+        /*-----------------------------------------------------------*/
         #endregion
-        
+
     }
 }
