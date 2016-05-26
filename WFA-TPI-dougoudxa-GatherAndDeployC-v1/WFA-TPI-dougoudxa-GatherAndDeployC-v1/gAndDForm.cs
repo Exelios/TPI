@@ -80,6 +80,8 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         {
             offlineHostNames = null;    //empties the string.
 
+            String[] fileNameArray = sourcePathTextBox.Text.Split('\\');
+
             if (synchronizeButton.Text == "Synchronize")
             {
                 int index = 0;
@@ -99,16 +101,24 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 }
                 else
                 {
+                    logTextBox.AppendText("Deploying : " + fileNameArray[fileNameArray.Length - 1] + "\n");
+
                     //Transfers file/directory to every host chosen.
                     foreach (TargetHost target in targetHostList)
                     {
-                        synchronize(currentSource, target, existenceResults, index);
+                        if (target.getSyncCheckBoxState())
+                        {
+                            logTextBox.AppendText(targetHostList[index].getTargetHostName() + " updating... ");
+
+                            synchronize(currentSource, target, existenceResults, index);
+
+                            logTextBox.AppendText("Done " + "" +  "\n");
+                        }
+
                         ++index;
                     }
 
-                    //Will contain error message in the future.
-                    //System.Windows.Forms.MessageBox.Show("The following hosts were unreachable : " 
-                    //    + Environment.NewLine + offlineHostNames, "Synchronization Status", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    logTextBox.AppendText("\n\nSynchronization finished!\n\n");
                 }
 
                 //stopSynchronization = true;
@@ -123,7 +133,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*---------------------------------------------------------------*/
 
         /// <summary>
-        /// Method verifying existence of an object
+        /// Method diffrenciating a file from a directory.
         /// </summary>
         /// <param name="currentSourcePath">Object path</param>
         /// <returns>Array where indexes 0 and 1 are for files respectivily directories</returns>
@@ -189,7 +199,42 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
             targetHostList.Clear();
 
+            SourceHost.setSourcePath(sourcePathTextBox.Text);
+
+            updateSourceInfoLabel(sourcePathTextBox.Text);
+
+            //Needed to represent correctly manual hosts and room hosts.
+            int hostIndex = 0;
+
             String tempRoom;
+
+            List<String> manualHost = new List<String>();
+
+            bool manualHostEmpty = true;
+
+            //Retrieves all the manual hosts typed in.
+            if(manualHostTextBox.Text != "")
+            {
+                int index = 0;
+                String[] tempArray = manualHostTextBox.Text.Split('\n');
+
+                foreach(String hostName in tempArray)
+                {
+                    index = hostName.IndexOf("\r");
+
+                    //if/else needed to trime unwanted chars from all names except the last one.
+                    if (index > 0)
+                    {
+                        manualHost.Add(hostName.Substring(0, index));
+                    }
+                    else
+                    {
+                        manualHost.Add(hostName);
+                    }
+                }
+
+                manualHostEmpty = false;
+            }
 
             //To only get the first four charactors
             if (Convert.ToString(roomComboBox.SelectedItem).Length > 3)
@@ -203,21 +248,57 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
             String tempHostName;
 
-            for (int index = 0; index < NetworkConfig.MACHINE_AMOUNT; index++)
+            //Assignes all the room hosts.
+            if (tempRoom != "")
             {
-                tempHostName = "\\\\INF-" + tempRoom + "-" + (index + 1).ToString("00");
+                for (int index = 0; index < NetworkConfig.MACHINE_AMOUNT; index++)
+                {
+                    tempHostName = "\\\\INF-" + tempRoom + "-" + (index + 1).ToString("00");
 
-                targetHostList.Add(new TargetHost(tempHostName, "Pinging...", index));
+                    targetHostList.Add(new TargetHost(tempHostName, "Pinging...", hostIndex));
 
-                hostPanelContainer.Controls.Add(targetHostList[index].getTargetHostPanel());
+                    targetHostList[hostIndex].setTargetPath(targetHostList[hostIndex].getTargetHostName() + targetPathTextBox.Text.Substring(2));
+
+                    hostPanelContainer.Controls.Add(targetHostList[hostIndex].getTargetHostPanel());
+
+                    //Keeps count of the hosts for next part of code.
+                    ++hostIndex;
+                }
+            }
+
+            //Assignes all the manual hosts.
+            if (!manualHostEmpty)
+            {
+                foreach(String hostName in manualHost)
+                {
+                    if (hostName != "" && hostName != "\r")
+                    {
+                        //Condition allowing both "\\INF-N511-09" and "INF-N511-09" to be accepted
+                        if (hostName.Substring(0, 2) == "\\\\")
+                        {
+                            targetHostList.Add(new TargetHost(hostName, "Pinging...", hostIndex));
+
+                            targetHostList[hostIndex].setTargetPath(targetHostList[hostIndex].getTargetHostName() + targetPathTextBox.Text.Substring(2));
+
+                            hostPanelContainer.Controls.Add(targetHostList[hostIndex].getTargetHostPanel());
+
+                            ++hostIndex;
+                        }
+                        else
+                        {
+                            targetHostList.Add(new TargetHost("\\\\" + hostName, "Pinging...", hostIndex));
+
+                            targetHostList[hostIndex].setTargetPath(targetHostList[hostIndex].getTargetHostName() + targetPathTextBox.Text.Substring(2));
+
+                            hostPanelContainer.Controls.Add(targetHostList[hostIndex].getTargetHostPanel());
+
+                            ++hostIndex;
+                        }
+                    }
+                }
             }
 
             startUpdateThreads();
-
-            //for(int index = 0; index < NetworkConfig.machineAmount; ++index)
-            //{
-            //    updateThreadList[index].Start();
-            //}
         }
         /*-----------------------------------------------------------------------------*/
 
@@ -232,6 +313,8 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
             //Updating the checkbox
             targetHostList[(int)index].setSyncCheckBoxState(targetHostList[(int)index].getSyncCheckBox());
+
+            analyzeSyncedState(targetHostList[(int)index]);
         }
         /*-----------------------------------------------------------------------------*/
 
@@ -280,6 +363,111 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*--------------------------------------------------------------------------------*/
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static int getTargetHostIndex(String name)
+        {
+            int index = -1;
+
+            foreach(TargetHost target in targetHostList)
+            {
+                if(target.getTargetHostName() != name)
+                {
+                    ++index;
+                }
+            }
+            return index + 1;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="target"></param>
+        private static void analyzeSyncedState(TargetHost target)
+        {
+            String targetPath = target.getTargetPath();
+
+            if(SourceHost.compareExisting("file", targetPath))
+            {
+                FileInfo targetFile = new FileInfo(targetPath);
+                FileInfo sourceFile = new FileInfo(SourceHost.getSourcePath());
+
+                if (targetFile.Length < sourceFile.Length || targetFile.LastWriteTime < sourceFile.LastWriteTime)
+                {
+                    target.setInfoProgressBarLabel("Need sync: " +
+                            SourceHost.formatSizeInteger(targetFile.Length) + " " +
+                            targetFile.LastWriteTime);
+                }
+                else
+                {
+                    target.setInfoProgressBarLabel("Synced: " +
+                            SourceHost.formatSizeInteger(targetFile.Length) + " " +
+                            targetFile.LastWriteTime);
+                }
+            }
+            else
+            {
+                if(SourceHost.compareExisting("directory", targetPath))
+                {
+                    DirectoryInfo targetDirectory = new DirectoryInfo(targetPath);
+                    DirectoryInfo sourceDirectory = new DirectoryInfo(SourceHost.getSourcePath());
+
+                    if (SourceHost.calculateDirectorySize(targetDirectory) < SourceHost.calculateDirectorySize(sourceDirectory) 
+                        || targetDirectory.LastWriteTime < sourceDirectory.LastWriteTime)
+                    {
+                        target.setInfoProgressBarLabel("Need sync: " + 
+                            SourceHost.formatSizeInteger(SourceHost.calculateDirectorySize(targetDirectory)) + " " +
+                            targetDirectory.LastWriteTime);
+                    }
+                    else
+                    {
+                        target.setInfoProgressBarLabel("Synced: " +
+                            SourceHost.formatSizeInteger(SourceHost.calculateDirectorySize(targetDirectory)) + " " +
+                            targetDirectory.LastWriteTime);
+                    }
+                }
+                else
+                {
+                    //No file or directory with the source name exists -> need to sync
+                    if (target.getSyncCheckBoxState())
+                    {
+                        target.setInfoProgressBarLabel("Need Sync");
+                    }
+                    else
+                    {
+                        target.setInfoProgressBarLabel("");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sourcePath"></param>
+        private void updateSourceInfoLabel(String sourcePath)
+        {
+            if (File.Exists(sourcePath))
+            {
+                FileInfo sourceFile = new FileInfo(sourcePath);
+
+                sourceInfoLabel.Text = "Source information: " + sourceFile.Name +
+                    " / Size: " + SourceHost.formatSizeInteger(sourceFile.Length) +
+                    " / Last write time: " + sourceFile.LastWriteTime;
+            }
+            else
+            {
+                DirectoryInfo sourceDirectory = new DirectoryInfo(sourcePath);
+
+                sourceInfoLabel.Text = "Source information: " + sourceDirectory.Name + 
+                    " / Size: " + SourceHost.formatSizeInteger(SourceHost.calculateDirectorySize(sourceDirectory)) + 
+                    " / Last write time: " + sourceDirectory.LastWriteTime;
+            }
+        }
+        
+        /// <summary>
         /// Method handelong the form closing procedure.
         /// </summary>
         /// <param name="sender"></param>
@@ -291,7 +479,6 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.Close();
         }
         /*-------------------------------------------------------------------*/
-
 
         #endregion
         

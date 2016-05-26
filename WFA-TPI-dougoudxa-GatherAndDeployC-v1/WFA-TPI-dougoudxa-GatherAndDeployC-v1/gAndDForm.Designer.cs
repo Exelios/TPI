@@ -48,6 +48,10 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.roomComboBoxLabel = new System.Windows.Forms.Label();
             this.manualHostTextBox = new System.Windows.Forms.TextBox();
             this.manualHostTextBoxLabel = new System.Windows.Forms.Label();
+            this.logTextBox = new System.Windows.Forms.TextBox();
+            this.logLabel = new System.Windows.Forms.Label();
+            this.logSaveButton = new System.Windows.Forms.Button();
+            this.sourceInfoLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // sourcePathLabel
@@ -64,11 +68,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.sourcePathTextBox.Location = new System.Drawing.Point(93, 17);
             this.sourcePathTextBox.MaxLength = 256;
             this.sourcePathTextBox.Name = "sourcePathTextBox";
-            this.sourcePathTextBox.Size = new System.Drawing.Size(256, 20);
+            this.sourcePathTextBox.Size = new System.Drawing.Size(505, 20);
             this.sourcePathTextBox.TabIndex = 1;
-            //For testing puposes only
-            this.sourcePathTextBox.Text = @"C:\Users\Win10Rsync\Desktop\PBS-SpaceTime";
-
+            this.sourcePathTextBox.Text = "C:\\Users\\Win10Rsync\\Desktop\\PBS-SpaceTime";
             // 
             // targetPathLabel
             // 
@@ -84,25 +86,24 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.targetPathTextBox.Location = new System.Drawing.Point(93, 52);
             this.targetPathTextBox.MaxLength = 256;
             this.targetPathTextBox.Name = "targetPathTextBox";
-            this.targetPathTextBox.Size = new System.Drawing.Size(256, 20);
+            this.targetPathTextBox.Size = new System.Drawing.Size(505, 20);
             this.targetPathTextBox.TabIndex = 3;
-            //For testing purposes only
-            this.targetPathTextBox.Text = @"C:\Users\Public\PBS-SpaceTime";
+            this.targetPathTextBox.Text = "C:\\Users\\Public\\PBS-SpaceTime";
             // 
-            // analyseButton
+            // analyzeButton
             // 
-            this.analyzeButton.Location = new System.Drawing.Point(84, 423);
-            this.analyzeButton.Name = "analyseButton";
+            this.analyzeButton.Location = new System.Drawing.Point(83, 463);
+            this.analyzeButton.Name = "analyzeButton";
             this.analyzeButton.Size = new System.Drawing.Size(75, 23);
             this.analyzeButton.TabIndex = 5;
             this.analyzeButton.Text = "Analyze";
             this.analyzeButton.UseVisualStyleBackColor = true;
             this.analyzeButton.Click += new System.EventHandler(this.analyzeButtonClick);
             // 
-            // synchroniseButton
+            // synchronizeButton
             // 
-            this.synchronizeButton.Location = new System.Drawing.Point(198, 423);
-            this.synchronizeButton.Name = "synchroniseButton";
+            this.synchronizeButton.Location = new System.Drawing.Point(197, 463);
+            this.synchronizeButton.Name = "synchronizeButton";
             this.synchronizeButton.Size = new System.Drawing.Size(75, 23);
             this.synchronizeButton.TabIndex = 6;
             this.synchronizeButton.Text = "Synchronize";
@@ -128,19 +129,19 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.hostPanelContainer.Size = new System.Drawing.Size(217, 314);
             this.hostPanelContainer.TabIndex = 8;
             // 
-            // roomListBox
+            // roomComboBox
             // 
             this.roomComboBox.FormattingEnabled = true;
             this.roomComboBox.Location = new System.Drawing.Point(5, 103);
-            this.roomComboBox.Name = "roomListBox";
-            this.roomComboBox.Size = new System.Drawing.Size(120, 30);
+            this.roomComboBox.Name = "roomComboBox";
+            this.roomComboBox.Size = new System.Drawing.Size(120, 21);
             this.roomComboBox.TabIndex = 9;
             // 
-            // roomListBoxLabel
+            // roomComboBoxLabel
             // 
             this.roomComboBoxLabel.AutoSize = true;
             this.roomComboBoxLabel.Location = new System.Drawing.Point(48, 87);
-            this.roomComboBoxLabel.Name = "roomListBoxLabel";
+            this.roomComboBoxLabel.Name = "roomComboBoxLabel";
             this.roomComboBoxLabel.Size = new System.Drawing.Size(35, 13);
             this.roomComboBoxLabel.TabIndex = 10;
             this.roomComboBoxLabel.Text = "Room";
@@ -162,11 +163,50 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.manualHostTextBoxLabel.TabIndex = 12;
             this.manualHostTextBoxLabel.Text = "Manual hosts";
             // 
+            // logTextBox
+            // 
+            this.logTextBox.Location = new System.Drawing.Point(356, 103);
+            this.logTextBox.Multiline = true;
+            this.logTextBox.Name = "logTextBox";
+            this.logTextBox.Size = new System.Drawing.Size(242, 314);
+            this.logTextBox.TabIndex = 13;
+            // 
+            // logLabel
+            // 
+            this.logLabel.AutoSize = true;
+            this.logLabel.Location = new System.Drawing.Point(457, 87);
+            this.logLabel.Name = "logLabel";
+            this.logLabel.Size = new System.Drawing.Size(29, 13);
+            this.logLabel.TabIndex = 14;
+            this.logLabel.Text = "LOG";
+            // 
+            // logSaveButton
+            // 
+            this.logSaveButton.Location = new System.Drawing.Point(440, 463);
+            this.logSaveButton.Name = "logSaveButton";
+            this.logSaveButton.Size = new System.Drawing.Size(75, 23);
+            this.logSaveButton.TabIndex = 15;
+            this.logSaveButton.Text = "Save";
+            this.logSaveButton.UseVisualStyleBackColor = true;
+            // 
+            // sourceInfoLabel
+            // 
+            this.sourceInfoLabel.AutoSize = true;
+            this.sourceInfoLabel.Location = new System.Drawing.Point(13, 424);
+            this.sourceInfoLabel.Name = "sourceInfoLabel";
+            this.sourceInfoLabel.Size = new System.Drawing.Size(101, 13);
+            this.sourceInfoLabel.TabIndex = 16;
+            this.sourceInfoLabel.Text = "Source information: ";
+            // 
             // gAndDForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(355, 458);
+            this.ClientSize = new System.Drawing.Size(603, 498);
+            this.Controls.Add(this.sourceInfoLabel);
+            this.Controls.Add(this.logSaveButton);
+            this.Controls.Add(this.logLabel);
+            this.Controls.Add(this.logTextBox);
             this.Controls.Add(this.manualHostTextBoxLabel);
             this.Controls.Add(this.manualHostTextBox);
             this.Controls.Add(this.roomComboBoxLabel);
@@ -184,7 +224,6 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.Name = "gAndDForm";
             this.ShowIcon = false;
             this.Text = "GatherAndDeployC#";
-            //this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.gAndDFormFormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -204,6 +243,10 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         private System.Windows.Forms.Label roomComboBoxLabel;
         private System.Windows.Forms.TextBox manualHostTextBox;
         private System.Windows.Forms.Label manualHostTextBoxLabel;
+        private System.Windows.Forms.TextBox logTextBox;
+        private System.Windows.Forms.Label logLabel;
+        private System.Windows.Forms.Button logSaveButton;
+        private System.Windows.Forms.Label sourceInfoLabel;
     }
 }
 

@@ -60,6 +60,11 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         private CheckBox syncHostCheckBox = new CheckBox();
 
         /// <summary>
+        /// 
+        /// </summary>
+        private InfoProgressBar updateBar;
+
+        /// <summary>
         /// Height of the labels in the targetHost labels.
         /// </summary>
         private const int LABEL_HEIGHT = 13;
@@ -137,11 +142,16 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             syncHostCheckBox.Location = new System.Drawing.Point(150, 0);
             syncHostCheckBox.Text = "Sync";
 
+            //Adding InforProgressBar
+            updateBar = new InfoProgressBar(0, 29, PANEL_WIDTH - 1, 17);
+            updateBar.setVisible(false);
+
             //Adding the controls in the panel
             hostPanel.Controls.Add(hostNameLabel);
             hostPanel.Controls.Add(hostStatusLabel);
             hostPanel.Controls.Add(syncHostCheckBox);
-
+            hostPanel.Controls.Add(updateBar.getProgressBar());
+            hostPanel.Controls.Add(updateBar.getLabel());
         }
         /*----------------------------------------------------*/
 
@@ -234,6 +244,16 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*--------------------------------------------------------*/
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public String getTargetPath()
+        {
+            return hostPath;
+        }
+        /*--------------------------------*/
+
+        /// <summary>
         /// Gets the checked state of a CheckBox.
         /// </summary>
         /// <returns>True if CheckBox checked, otherwise false.</returns>
@@ -282,6 +302,26 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             }
         }
         /*-------------------------------------*/
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public InfoProgressBar getInfoProgressBar()
+        {
+            return updateBar;
+        }
+        /*----------------------------------------------*/
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="newText"></param>
+        public void setInfoProgressBarLabel(String newText)
+        {
+            this.updateBar.setLabel(this.updateBar.getLabel(), newText);
+        }
+
         #endregion
     }
 }

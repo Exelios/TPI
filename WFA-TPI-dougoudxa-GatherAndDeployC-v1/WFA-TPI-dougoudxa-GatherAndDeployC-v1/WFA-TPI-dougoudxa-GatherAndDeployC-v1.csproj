@@ -55,6 +55,7 @@
     <Compile Include="gAndDForm.Designer.cs">
       <DependentUpon>gAndDForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="InfoProgressBar.cs" />
     <Compile Include="NetworkConfig.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

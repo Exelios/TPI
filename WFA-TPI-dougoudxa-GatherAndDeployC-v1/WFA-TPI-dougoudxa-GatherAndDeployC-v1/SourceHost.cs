@@ -29,7 +29,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <summary>
         /// Path of the source object going to be deployed.
         /// </summary>
-        private String sourcePath;
+        private static String sourcePath;
 
         #endregion
 
@@ -53,11 +53,16 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// Sets new path to source object.
         /// </summary>
         /// <param name="newSourcePath"></param>
-        public void setSourcePath(String newSourcePath)
+        public static void setSourcePath(String newSourcePath)
         {
             sourcePath = newSourcePath;
         }
         /*--------------------------------------------------------------*/
+
+        public static String getSourcePath()
+        {
+            return sourcePath;
+        }
 
         /// <summary>
         /// Taken from this source:
@@ -106,7 +111,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// </summary>
         /// <param name="directory"></param>
         /// <returns></returns>
-        private long calculateDirectorySize(DirectoryInfo directory)
+        public static long calculateDirectorySize(DirectoryInfo directory)
         {
             long directorySize = 0;
 
@@ -131,12 +136,16 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// Method charged with managing a object transfer
         /// </summary>
         /// <param name="sourcePath">Source object</param>
-        /// <param name="targetPath">Target object place</param>
+        /// <param name="targetPath">Target object place containing target name in pole position</param>
         public void share(String sourcePath, String targetPath, bool[] existenceResults)
         {
             System.Windows.Forms.DialogResult result;
 
             String[] targetName = targetPath.Split('\\');
+
+            String targetSize = null;
+
+            DateTime targetLastWriteTime;
 
             //Case where it's not a directory or the directory doesn't exist.
             if(!existenceResults[1])
@@ -149,68 +158,62 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 }
                 else  //Case where it is a file.
                 {
-                    //Files aren't the same in last modification time.
-                    if (!compareExisting("file", sourcePath, targetPath))
+                    //Files aren't the same.
+                    if (!compareExisting("file", targetPath))
                     {
                         File.Copy(sourcePath, targetPath, true);
                     }
                     else
                     {
-                        FileInfo currentFile = new FileInfo(sourcePath);
-                        FileInfo targetFile = new FileInfo(targetPath);
-
                         //Displays a multiline message box with information concerning a name conflict.
-                        result = System.Windows.Forms.MessageBox.Show(
-                            "File already exists, overwrite ?" + Environment.NewLine + Environment.NewLine +
-                            "Source :" + Environment.NewLine +
-                            "Size : " + formatSizeInteger(currentFile.Length) + Environment.NewLine +
-                            "Last modification : " + currentFile.LastWriteTime + Environment.NewLine + Environment.NewLine +
-                            "Destination :" + Environment.NewLine +
-                            "Size : " + formatSizeInteger(targetFile.Length) + Environment.NewLine +
-                            "Last modification : " + targetFile.LastWriteTime,
-                            "Warning for host " + targetName[2],
-                            System.Windows.Forms.MessageBoxButtons.YesNo,
-                            System.Windows.Forms.MessageBoxIcon.Information);
+                        //result = System.Windows.Forms.MessageBox.Show(
+                        //    "File already exists, overwrite ?" + Environment.NewLine + Environment.NewLine +
+                        //    "Source :" + Environment.NewLine +
+                        //    "Size : " + formatSizeInteger(currentFile.Length) + Environment.NewLine +
+                        //    "Last modification : " + currentFile.LastWriteTime + Environment.NewLine + Environment.NewLine +
+                        //    "Destination :" + Environment.NewLine +
+                        //    "Size : " + formatSizeInteger(targetFile.Length) + Environment.NewLine +
+                        //    "Last modification : " + targetFile.LastWriteTime,
+                        //    "Warning for host " + targetName[2],
+                        //    System.Windows.Forms.MessageBoxButtons.YesNo,
+                        //    System.Windows.Forms.MessageBoxIcon.Information);
 
-                        if(result == System.Windows.Forms.DialogResult.Yes)
-                        {
-                            File.Copy(sourcePath, targetPath, true);
+                        //if(result == System.Windows.Forms.DialogResult.Yes)
+                        //{
+                        //    File.Copy(sourcePath, targetPath, true);
 
-                            FileInfo overwrittenFile = new FileInfo(targetPath);
-                            overwrittenFile.LastWriteTime = DateTime.Now;
-                        }
+                        //    FileInfo overwrittenFile = new FileInfo(targetPath);
+                        //    overwrittenFile.LastWriteTime = DateTime.Now;
+                        //}
                     }
                 }
             }
             else //Case where it is a directory.
             {
                 //Directories aren't the same in last modification time.
-                if (!compareExisting("directory", sourcePath, targetPath))
+                if (!compareExisting("directory", targetPath))
                 {
                     copyDirectory(sourcePath, targetPath, true);
                 }
                 else
                 {
-                    DirectoryInfo currentDirectory = new DirectoryInfo(sourcePath);
-                    DirectoryInfo targetDirectory = new DirectoryInfo(targetPath);
-
                     //Displays a multiline message box with information concerning a name conflict.
-                    result = System.Windows.Forms.MessageBox.Show(
-                            "Directory already exists, overwrite ?" + Environment.NewLine + Environment.NewLine +
-                            "Source :" + Environment.NewLine +
-                            "Size : " + formatSizeInteger(calculateDirectorySize(currentDirectory)) + Environment.NewLine +
-                            "Last modification : " + currentDirectory.LastWriteTime + Environment.NewLine + Environment.NewLine +
-                            "Destination :" + Environment.NewLine +
-                            "Size : " + formatSizeInteger(calculateDirectorySize(targetDirectory)) + Environment.NewLine +
-                            "Last modification : " + targetDirectory.LastWriteTime,
-                            "Warning for host " + targetName[2],
-                            System.Windows.Forms.MessageBoxButtons.YesNo,
-                            System.Windows.Forms.MessageBoxIcon.Information);
+                    //result = System.Windows.Forms.MessageBox.Show(
+                    //        "Directory already exists, overwrite ?" + Environment.NewLine + Environment.NewLine +
+                    //        "Source :" + Environment.NewLine +
+                    //        "Size : " + formatSizeInteger(calculateDirectorySize(currentDirectory)) + Environment.NewLine +
+                    //        "Last modification : " + currentDirectory.LastWriteTime + Environment.NewLine + Environment.NewLine +
+                    //        "Destination :" + Environment.NewLine +
+                    //        "Size : " + formatSizeInteger(calculateDirectorySize(targetDirectory)) + Environment.NewLine +
+                    //        "Last modification : " + targetDirectory.LastWriteTime,
+                    //        "Warning for host " + targetName[2],
+                    //        System.Windows.Forms.MessageBoxButtons.YesNo,
+                    //        System.Windows.Forms.MessageBoxIcon.Information);
 
-                    if(result == System.Windows.Forms.DialogResult.Yes)
-                    {
-                        copyDirectory(sourcePath, targetPath, true);
-                    }
+                    //if(result == System.Windows.Forms.DialogResult.Yes)
+                    //{
+                    //    copyDirectory(sourcePath, targetPath, true);
+                    //}
                 }
             }
         }
@@ -223,7 +226,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="sourcePath">Source Directory/File</param>
         /// <param name="targetPath">Target Directory/File</param>
         /// <returns>Status true if it exists</returns>
-        private bool compareExisting(String type, String sourcePath, String targetPath)
+        public static bool compareExisting(String type, String targetPath)
         {
             switch (type)
             {
@@ -258,7 +261,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// </summary>
         /// <param name="input">Original size in octet unit.</param>
         /// <returns>The size in the correct octet prefixed unit.</returns>
-        private String formatSizeInteger(long input)
+        public static String formatSizeInteger(long input)
         {
             if (input > Math.Pow(1000, 3))
             {

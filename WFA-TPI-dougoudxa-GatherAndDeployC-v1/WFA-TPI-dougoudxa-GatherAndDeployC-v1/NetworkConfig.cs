@@ -26,7 +26,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <summary>
         /// Array of strings representing the differents classrooms at ETML.
         /// </summary>
-        private static String[] roomListArray = { "N101", "N102", "N103", "N104", "N109", "N501", "N508b", "N509", "N510b", "N511", "N512a", "N512b" };
+        private static String[] roomListArray = { "", "N101", "N102", "N103", "N104", "N109", "N501", "N508b", "N509", "N510b", "N511", "N512a", "N512b" };
 
         /// <summary>
         /// Number of rooms at ETML.
