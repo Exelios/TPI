@@ -14,6 +14,8 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 {
     static class Program
     {
+        public static gAndDForm Form;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -22,7 +24,8 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new gAndDForm());
+            Form = new gAndDForm();
+            Application.Run(Form);
         }
     }
 }

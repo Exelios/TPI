@@ -22,7 +22,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <summary>
         /// Source is needed for file/directory transfers. Instanciated.
         /// </summary>
-        private SourceHost currentSource = new SourceHost();
+        public static SourceHost currentSource = new SourceHost();
 
         /// <summary>
         /// Variable necessary to stop synchronization process.
@@ -35,9 +35,19 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         private volatile static bool stopUpdating = true;
 
         /// <summary>
-        /// String containing the names of all the offline hosts.
+        /// Tells the event methd to add a scroll bar when needed.
         /// </summary>
-        private static String offlineHostNames = null;
+        private bool needLogScrollBar = false;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static String logText = "";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        //private Thread updateLog = new Thread(updateLogText);
 
         #endregion
 
@@ -55,21 +65,8 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             {
                 roomComboBox.Items.Add(NetworkConfig.getRoom(index));
             }
-            
-
-
-            ////Testing purposes.
-            //int dummyEntries = 17;
-            //TargetHost tempHost;
-
-            //for (int index = 0; index < dummyEntries; ++index)
-            //{
-            //    tempHost = new TargetHost("\\\\INF-N511-" + (index + 1).ToString("00"), "dummy test", index + 2);
-                
-            //    hostPanelContainer.Controls.Add(tempHost.getTargetHostPanel());
-            //}
-            //End of test
         }
+        /*-------------------------------------------------------------------*/
 
         /// <summary>
         /// Event method when synchronizeButton is clicked
@@ -78,7 +75,6 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="e"></param>
         private void synchronizeButtonClick(object sender, EventArgs e)
         {
-            offlineHostNames = null;    //empties the string.
 
             String[] fileNameArray = sourcePathTextBox.Text.Split('\\');
 
@@ -101,24 +97,33 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 }
                 else
                 {
-                    logTextBox.AppendText("Deploying : " + fileNameArray[fileNameArray.Length - 1] + ":" + Environment.NewLine);
+                    //Shows the deployment message whether it is a file or directory.
+                    if (File.Exists(sourcePathTextBox.Text))
+                    {
+                        logTextBox.AppendText("Deploying file - " + fileNameArray[fileNameArray.Length - 1] + ":" + Environment.NewLine + Environment.NewLine);
+                    }
+                    else
+                    {
+                        logTextBox.AppendText("Deploying directory - " + fileNameArray[fileNameArray.Length - 1] + ":" + Environment.NewLine + Environment.NewLine);
+                    }
 
                     //Transfers file/directory to every host chosen.
                     foreach (TargetHost target in targetHostList)
                     {
                         if (target.getSyncCheckBoxState())
                         {
-                            logTextBox.AppendText(targetHostList[index].getTargetHostName() + " syncing... " + Environment.NewLine);
+                            logTextBox.AppendText("    " + targetHostList[index].getTargetHostName() + " syncing... " + Environment.NewLine
+                                + "******************************************************" + Environment.NewLine);
 
                             synchronize(currentSource, target, existenceResults, index);
 
-                            logTextBox.AppendText("\tDone " + DateTime.Now.ToShortDateString() + ' ' + DateTime.Now.ToLongTimeString() + Environment.NewLine);
+                            logTextBox.AppendText(Environment.NewLine + "\tDone " + DateTime.Now.ToShortDateString() + ' ' + DateTime.Now.ToLongTimeString() + Environment.NewLine + Environment.NewLine);
                         }
 
                         ++index;
                     }
 
-                    logTextBox.AppendText("\n\nSynchronization finished!\n\n");
+                    logTextBox.AppendText("Synchronization finished!" + Environment.NewLine + Environment.NewLine);
                 }
 
                 //stopSynchronization = true;
@@ -172,16 +177,26 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         {
             //Shares file / directory and asks if we want to overwrite an existing file / directory 
             //Works for connected hosts.
-
-            if (target.getHostStatus() == NetworkConfig.connectionStatusArray[0] + ' ' && target.getSyncCheckBoxState())
+            if (!stopSynchronization)
             {
-                source.share(sourcePathTextBox.Text,
-                    targetHostList[index].getTargetHostName() + targetPathTextBox.Text.Substring(2),
-                    existenceResults);
+                if (target.getHostStatus() == NetworkConfig.connectionStatusArray[0] + ' ' && target.getSyncCheckBoxState())
+                {
+                    gAndDForm.logText = "";
+
+                    source.share(sourcePathTextBox.Text,
+                        targetHostList[index].getTargetHostName() + targetPathTextBox.Text.Substring(2),
+                        existenceResults);
+
+                    logTextBox.AppendText(gAndDForm.logText);
+                }
+                else
+                {
+                    //void
+                }
             }
             else
             {
-                offlineHostNames = "No online hosts selected";
+                System.Windows.Forms.MessageBox.Show("Check your input values.", "Sync Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         /*------------------------------------------------------------------*/
@@ -389,22 +404,36 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         {
             String targetPath = target.getTargetPath();
 
+            stopSynchronization = false;
+
             if(SourceHost.compareExisting("file", targetPath))
             {
                 FileInfo targetFile = new FileInfo(targetPath);
                 FileInfo sourceFile = new FileInfo(SourceHost.getSourcePath());
 
-                if (targetFile.Length < sourceFile.Length || targetFile.LastWriteTime < sourceFile.LastWriteTime)
+                //Verify that both paths lead to a same type of file
+
+                if (targetFile.Extension == sourceFile.Extension)
                 {
-                    target.setInfoProgressBarLabel("Need sync: " +
-                            SourceHost.formatSizeInteger(targetFile.Length) + " " +
-                            targetFile.LastWriteTime);
+                    if (targetFile.Length < sourceFile.Length || targetFile.LastWriteTime < sourceFile.LastWriteTime)
+                    {
+                        target.setInfoProgressBarLabel("Need sync: " +
+                                SourceHost.formatSizeInteger(targetFile.Length) + " " +
+                                targetFile.LastWriteTime);
+                    }
+                    else
+                    {
+                        target.setInfoProgressBarLabel("Synced: " +
+                                SourceHost.formatSizeInteger(targetFile.Length) + " " +
+                                targetFile.LastWriteTime);
+                    }
                 }
+                //Error in the destination and source paths, they don't match to a same type of object.
                 else
                 {
-                    target.setInfoProgressBarLabel("Synced: " +
-                            SourceHost.formatSizeInteger(targetFile.Length) + " " +
-                            targetFile.LastWriteTime);
+                    System.Windows.Forms.MessageBox.Show("Extension mismatch", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    stopSynchronization = true;
                 }
             }
             else
@@ -414,18 +443,29 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                     DirectoryInfo targetDirectory = new DirectoryInfo(targetPath);
                     DirectoryInfo sourceDirectory = new DirectoryInfo(SourceHost.getSourcePath());
 
-                    if (SourceHost.calculateDirectorySize(targetDirectory) < SourceHost.calculateDirectorySize(sourceDirectory) 
-                        || targetDirectory.LastWriteTime < sourceDirectory.LastWriteTime)
+                    if (targetDirectory.Extension == sourceDirectory.Extension)
                     {
-                        target.setInfoProgressBarLabel("Need sync: " + 
-                            SourceHost.formatSizeInteger(SourceHost.calculateDirectorySize(targetDirectory)) + " " +
-                            targetDirectory.LastWriteTime);
+
+                        if (SourceHost.calculateDirectorySize(targetDirectory) < SourceHost.calculateDirectorySize(sourceDirectory)
+                            || targetDirectory.LastWriteTime < sourceDirectory.LastWriteTime)
+                        {
+                            target.setInfoProgressBarLabel("Need sync: " +
+                                SourceHost.formatSizeInteger(SourceHost.calculateDirectorySize(targetDirectory)) + " " +
+                                targetDirectory.LastWriteTime);
+                        }
+                        else
+                        {
+                            target.setInfoProgressBarLabel("Synced: " +
+                                SourceHost.formatSizeInteger(SourceHost.calculateDirectorySize(targetDirectory)) + " " +
+                                targetDirectory.LastWriteTime);
+                        }
                     }
+                    //Error in the destination and source paths, they don't match to a same type of object.
                     else
                     {
-                        target.setInfoProgressBarLabel("Synced: " +
-                            SourceHost.formatSizeInteger(SourceHost.calculateDirectorySize(targetDirectory)) + " " +
-                            targetDirectory.LastWriteTime);
+                        System.Windows.Forms.MessageBox.Show("Source or target isn't a directory", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        stopSynchronization = true;
                     }
                 }
                 else
@@ -495,8 +535,35 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             write.Write(logTextBox.Text);
 
             write.Close();
+
+            System.Windows.Forms.MessageBox.Show("LOG saved as " + logFilePath);
         }
         /*-----------------------------------------------------------*/
+
+        /// <summary>
+        /// Adds a vertical scrollbar to logTextBox when number of lines 
+        /// is greater than the amount of lines the textBox can show.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void logTextBoxTextChanged(object sender, EventArgs e)
+        {
+            if (!needLogScrollBar)
+            {
+                if (logTextBox.Lines.Length > 22)
+                {
+                    needLogScrollBar = true;
+
+                    logTextBox.ScrollBars = ScrollBars.Vertical;
+                }
+            }
+        }
+        /*-----------------------------------------------------------------*/
+
+        public void appendLogTextBox(String additionnalText)
+        {
+            logTextBox.AppendText(additionnalText);
+        }
         #endregion
 
     }

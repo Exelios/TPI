@@ -165,11 +165,15 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             // 
             // logTextBox
             // 
+            this.logTextBox.BackColor = System.Drawing.SystemColors.Window;
             this.logTextBox.Location = new System.Drawing.Point(356, 103);
+            this.logTextBox.MaxLength = 65536;
             this.logTextBox.Multiline = true;
             this.logTextBox.Name = "logTextBox";
+            this.logTextBox.ReadOnly = true;
             this.logTextBox.Size = new System.Drawing.Size(242, 314);
             this.logTextBox.TabIndex = 13;
+            this.logTextBox.TextChanged += new System.EventHandler(this.logTextBoxTextChanged);
             // 
             // logLabel
             // 

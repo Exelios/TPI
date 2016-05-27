@@ -80,6 +80,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             // If the destination directory doesn't exist, create it.
             if (!Directory.Exists(TargetDirectoryPath))
             {
+                //LOG entry here!
+                gAndDForm.currentSource.sendLogEntry("Creating: " + Environment.NewLine + TargetDirectoryPath);
+
                 Directory.CreateDirectory(TargetDirectoryPath);
             }
 
@@ -88,6 +91,10 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             foreach (FileInfo file in files)
             {
                 String tempPath = Path.Combine(TargetDirectoryPath, file.Name);
+
+                //LOG entry here!
+                gAndDForm.currentSource.sendLogEntry("Copying: " + Environment.NewLine + tempPath);
+
                 file.CopyTo(tempPath, true);
             }
 
@@ -161,30 +168,14 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                     //Files aren't the same.
                     if (!compareExisting("file", targetPath))
                     {
+                        //LOG entry here!
+                        sendLogEntry("Copying: " + Environment.NewLine + targetPath);
+
                         File.Copy(sourcePath, targetPath, true);
                     }
                     else
                     {
-                        //Displays a multiline message box with information concerning a name conflict.
-                        //result = System.Windows.Forms.MessageBox.Show(
-                        //    "File already exists, overwrite ?" + Environment.NewLine + Environment.NewLine +
-                        //    "Source :" + Environment.NewLine +
-                        //    "Size : " + formatSizeInteger(currentFile.Length) + Environment.NewLine +
-                        //    "Last modification : " + currentFile.LastWriteTime + Environment.NewLine + Environment.NewLine +
-                        //    "Destination :" + Environment.NewLine +
-                        //    "Size : " + formatSizeInteger(targetFile.Length) + Environment.NewLine +
-                        //    "Last modification : " + targetFile.LastWriteTime,
-                        //    "Warning for host " + targetName[2],
-                        //    System.Windows.Forms.MessageBoxButtons.YesNo,
-                        //    System.Windows.Forms.MessageBoxIcon.Information);
-
-                        //if(result == System.Windows.Forms.DialogResult.Yes)
-                        //{
-                        //    File.Copy(sourcePath, targetPath, true);
-
-                        //    FileInfo overwrittenFile = new FileInfo(targetPath);
-                        //    overwrittenFile.LastWriteTime = DateTime.Now;
-                        //}
+                        //Taken care of by syncState
                     }
                 }
             }
@@ -193,27 +184,13 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 //Directories aren't the same in last modification time.
                 if (!compareExisting("directory", targetPath))
                 {
+                    //LOG entry not here!
+
                     copyDirectory(sourcePath, targetPath, true);
                 }
                 else
                 {
-                    //Displays a multiline message box with information concerning a name conflict.
-                    //result = System.Windows.Forms.MessageBox.Show(
-                    //        "Directory already exists, overwrite ?" + Environment.NewLine + Environment.NewLine +
-                    //        "Source :" + Environment.NewLine +
-                    //        "Size : " + formatSizeInteger(calculateDirectorySize(currentDirectory)) + Environment.NewLine +
-                    //        "Last modification : " + currentDirectory.LastWriteTime + Environment.NewLine + Environment.NewLine +
-                    //        "Destination :" + Environment.NewLine +
-                    //        "Size : " + formatSizeInteger(calculateDirectorySize(targetDirectory)) + Environment.NewLine +
-                    //        "Last modification : " + targetDirectory.LastWriteTime,
-                    //        "Warning for host " + targetName[2],
-                    //        System.Windows.Forms.MessageBoxButtons.YesNo,
-                    //        System.Windows.Forms.MessageBoxIcon.Information);
-
-                    //if(result == System.Windows.Forms.DialogResult.Yes)
-                    //{
-                    //    copyDirectory(sourcePath, targetPath, true);
-                    //}
+                    //Taken care of by syncState
                 }
             }
         }
@@ -288,6 +265,15 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         }
         /*-----------------------------------------------------------------------------*/
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="newLogEntry"></param>
+        private void sendLogEntry(String newLogEntry)
+        {
+            Program.Form.appendLogTextBox("\t" + newLogEntry + Environment.NewLine);
+        }
+        /*-----------------------------------------------*/
         #endregion
     }
 }
