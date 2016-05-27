@@ -266,9 +266,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*-----------------------------------------------------------------------------*/
         
         /// <summary>
-        /// 
+        /// Appends a status text the main form logTextBox.
         /// </summary>
-        /// <param name="newLogEntry"></param>
+        /// <param name="newLogEntry">Text to append</param>
         private void sendLogEntry(String newLogEntry)
         {
             Program.Form.appendLogTextBox("\t" + newLogEntry + Environment.NewLine);

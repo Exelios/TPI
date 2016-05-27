@@ -40,14 +40,14 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         private bool needLogScrollBar = false;
 
         /// <summary>
-        /// 
+        /// Temporary string container.
         /// </summary>
         public static String logText = "";
 
         /// <summary>
-        /// 
+        /// Says if we can analyse the targets according to a source path or not.
         /// </summary>
-        //private Thread updateLog = new Thread(updateLogText);
+        private bool analyzable;
 
         #endregion
 
@@ -218,102 +218,107 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
             updateSourceInfoLabel(sourcePathTextBox.Text);
 
-            //Needed to represent correctly manual hosts and room hosts.
-            int hostIndex = 0;
-
-            String tempRoom;
-
-            List<String> manualHost = new List<String>();
-
-            bool manualHostEmpty = true;
-
-            //Retrieves all the manual hosts typed in.
-            if(manualHostTextBox.Text != "")
+            if (analyzable)
             {
-                int index = 0;
-                String[] tempArray = manualHostTextBox.Text.Split('\n');
+                //Needed to represent correctly manual hosts and room hosts.
+                int hostIndex = 0;
 
-                foreach(String hostName in tempArray)
+                String tempRoom;
+
+                List<String> manualHost = new List<String>();
+
+                bool manualHostEmpty = true;
+
+                //Retrieves all the manual hosts typed in.
+                if (manualHostTextBox.Text != "")
                 {
-                    index = hostName.IndexOf("\r");
+                    int index = 0;
+                    String[] tempArray = manualHostTextBox.Text.Split('\n');
 
-                    //if/else needed to trime unwanted chars from all names except the last one.
-                    if (index > 0)
+                    foreach (String hostName in tempArray)
                     {
-                        manualHost.Add(hostName.Substring(0, index));
-                    }
-                    else
-                    {
-                        manualHost.Add(hostName);
-                    }
-                }
+                        index = hostName.IndexOf("\r");
 
-                manualHostEmpty = false;
-            }
-
-            //To only get the first four charactors
-            if (Convert.ToString(roomComboBox.SelectedItem).Length > 3)
-            {
-                tempRoom = Convert.ToString(roomComboBox.SelectedItem).Substring(0, 4);
-            }
-            else
-            {
-                tempRoom = Convert.ToString(roomComboBox.SelectedItem);
-            }
-
-            String tempHostName;
-
-            //Assignes all the room hosts.
-            if (tempRoom != "")
-            {
-                for (int index = 0; index < NetworkConfig.MACHINE_AMOUNT; index++)
-                {
-                    tempHostName = "\\\\INF-" + tempRoom + "-" + (index + 1).ToString("00");
-
-                    targetHostList.Add(new TargetHost(tempHostName, "Pinging...", hostIndex));
-
-                    targetHostList[hostIndex].setTargetPath(targetHostList[hostIndex].getTargetHostName() + targetPathTextBox.Text.Substring(2));
-
-                    hostPanelContainer.Controls.Add(targetHostList[hostIndex].getTargetHostPanel());
-
-                    //Keeps count of the hosts for next part of code.
-                    ++hostIndex;
-                }
-            }
-
-            //Assignes all the manual hosts.
-            if (!manualHostEmpty)
-            {
-                foreach(String hostName in manualHost)
-                {
-                    if (hostName != "" && hostName != "\r")
-                    {
-                        //Condition allowing both "\\INF-N511-09" and "INF-N511-09" to be accepted
-                        if (hostName.Substring(0, 2) == "\\\\")
+                        //if/else needed to trime unwanted chars from all names except the last one.
+                        if (index > 0)
                         {
-                            targetHostList.Add(new TargetHost(hostName, "Pinging...", hostIndex));
-
-                            targetHostList[hostIndex].setTargetPath(targetHostList[hostIndex].getTargetHostName() + targetPathTextBox.Text.Substring(2));
-
-                            hostPanelContainer.Controls.Add(targetHostList[hostIndex].getTargetHostPanel());
-
-                            ++hostIndex;
+                            manualHost.Add(hostName.Substring(0, index));
                         }
                         else
                         {
-                            targetHostList.Add(new TargetHost("\\\\" + hostName, "Pinging...", hostIndex));
+                            manualHost.Add(hostName);
+                        }
+                    }
 
-                            targetHostList[hostIndex].setTargetPath(targetHostList[hostIndex].getTargetHostName() + targetPathTextBox.Text.Substring(2));
+                    manualHostEmpty = false;
+                }
 
-                            hostPanelContainer.Controls.Add(targetHostList[hostIndex].getTargetHostPanel());
+                //To only get the first four charactors
+                if (Convert.ToString(roomComboBox.SelectedItem).Length > 3)
+                {
+                    tempRoom = Convert.ToString(roomComboBox.SelectedItem).Substring(0, 4);
+                }
+                else
+                {
+                    tempRoom = Convert.ToString(roomComboBox.SelectedItem);
+                }
 
-                            ++hostIndex;
+                String tempHostName;
+
+                //Assignes all the room hosts.
+                if (tempRoom != "")
+                {
+                    for (int index = 0; index < NetworkConfig.MACHINE_AMOUNT; index++)
+                    {
+                        tempHostName = "\\\\INF-" + tempRoom + "-" + (index + 1).ToString("00");
+
+                        targetHostList.Add(new TargetHost(tempHostName, "Pinging...", hostIndex));
+
+                        targetHostList[hostIndex].setTargetPath(targetHostList[hostIndex].getTargetHostName() + targetPathTextBox.Text.Substring(2));
+
+                        hostPanelContainer.Controls.Add(targetHostList[hostIndex].getTargetHostPanel());
+
+                        //Keeps count of the hosts for next part of code.
+                        ++hostIndex;
+                    }
+                }
+
+                //Assignes all the manual hosts.
+                if (!manualHostEmpty)
+                {
+                    foreach (String hostName in manualHost)
+                    {
+                        if (hostName != "" && hostName != "\r")
+                        {
+                            //Condition allowing both "\\INF-N511-09" and "INF-N511-09" to be accepted
+                            if (hostName.Substring(0, 2) == "\\\\")
+                            {
+                                targetHostList.Add(new TargetHost(hostName, "Pinging...", hostIndex));
+
+                                targetHostList[hostIndex].setTargetPath(targetHostList[hostIndex].getTargetHostName() + targetPathTextBox.Text.Substring(2));
+
+                                hostPanelContainer.Controls.Add(targetHostList[hostIndex].getTargetHostPanel());
+
+                                ++hostIndex;
+                            }
+                            else
+                            {
+                                targetHostList.Add(new TargetHost("\\\\" + hostName, "Pinging...", hostIndex));
+
+                                targetHostList[hostIndex].setTargetPath(targetHostList[hostIndex].getTargetHostName() + targetPathTextBox.Text.Substring(2));
+
+                                hostPanelContainer.Controls.Add(targetHostList[hostIndex].getTargetHostPanel());
+
+                                ++hostIndex;
+                            }
                         }
                     }
                 }
+
+                startUpdateThreads();
             }
 
-            startUpdateThreads();
+            analyzable = false;
         }
         /*-----------------------------------------------------------------------------*/
 
@@ -378,7 +383,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*--------------------------------------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Gets the index of a given target name in the targetHostList
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -395,11 +400,12 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             }
             return index + 1;
         }
+        /*-----------------------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Analyses each target and sees if it's synced or not with the source.
         /// </summary>
-        /// <param name="target"></param>
+        /// <param name="target">target passed by parameter.</param>
         private static void analyzeSyncedState(TargetHost target)
         {
             String targetPath = target.getTargetPath();
@@ -482,11 +488,12 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 }
             }
         }
+        /*---------------------------------------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Updates the source info label.
         /// </summary>
-        /// <param name="sourcePath"></param>
+        /// <param name="sourcePath">Path of source being shown in the label</param>
         private void updateSourceInfoLabel(String sourcePath)
         {
             if (File.Exists(sourcePath))
@@ -496,16 +503,30 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 sourceInfoLabel.Text = "Source information: " + sourceFile.Name +
                     " / Size: " + SourceHost.formatSizeInteger(sourceFile.Length) +
                     " / Last write time: " + sourceFile.LastWriteTime;
+
+                analyzable = true;
             }
             else
             {
-                DirectoryInfo sourceDirectory = new DirectoryInfo(sourcePath);
+                if (Directory.Exists(sourcePath))
+                {
+                    DirectoryInfo sourceDirectory = new DirectoryInfo(sourcePath);
 
-                sourceInfoLabel.Text = "Source information: " + sourceDirectory.Name + 
-                    " / Size: " + SourceHost.formatSizeInteger(SourceHost.calculateDirectorySize(sourceDirectory)) + 
-                    " / Last write time: " + sourceDirectory.LastWriteTime;
+                    sourceInfoLabel.Text = "Source information: " + sourceDirectory.Name +
+                        " / Size: " + SourceHost.formatSizeInteger(SourceHost.calculateDirectorySize(sourceDirectory)) +
+                        " / Last write time: " + sourceDirectory.LastWriteTime;
+
+                    analyzable = true;
+                }
+                else
+                {
+                    analyzable = false;
+
+                    System.Windows.Forms.MessageBox.Show("No such file or directory.", "Source Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
+        /*--------------------------------------------------------------------------------------------------*/
         
         /// <summary>
         /// Method handelong the form closing procedure.
@@ -527,7 +548,8 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="e"></param>
         private void logSaveButtonClick(object sender, EventArgs e)
         {
-            String logFilePath = "C:\\Users\\" + (String)Environment.UserName + "\\Desktop\\g&d_log.txt";
+            String logFilePath = "C:\\Users\\" + (String)Environment.UserName + "\\Desktop\\g&d_log_" + 
+               DateTime.Now.ToShortDateString() + '_' + DateTime.Now.ToLongTimeString().Replace(':','-') + ".txt";
 
             FileStream stream = new FileStream(logFilePath, FileMode.Create);
 
@@ -560,10 +582,15 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         }
         /*-----------------------------------------------------------------*/
 
+        /// <summary>
+        /// Appends status text in the logTextBox
+        /// </summary>
+        /// <param name="additionnalText">appended text to log</param>
         public void appendLogTextBox(String additionnalText)
         {
             logTextBox.AppendText(additionnalText);
         }
+        /*----------------------------------------------*/
         #endregion
 
     }
