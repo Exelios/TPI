@@ -25,15 +25,15 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         public static SourceHost currentSource = new SourceHost();
 
         /// <summary>
+        /// 
+        /// </summary>
+        private InfoProgressBar generalProgressBar;
+
+        /// <summary>
         /// Variable necessary to stop synchronization process.
         /// </summary>
         private static bool stopSynchronization = false;
-
-        /// <summary>
-        /// Variable allowing or stopping the status update of all the hosts.
-        /// </summary>
-        private volatile static bool stopUpdating = true;
-
+        
         /// <summary>
         /// Tells the event methd to add a scroll bar when needed.
         /// </summary>
@@ -49,6 +49,16 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// </summary>
         private bool analyzable;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool usableAnalyzieButton = true;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="button"></param>
+        private delegate void crossThreadAnalizeButtonEnabler(Control button);
         #endregion
 
         #region Class methods
@@ -65,6 +75,13 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             {
                 roomComboBox.Items.Add(NetworkConfig.getRoom(index));
             }
+
+            sourceInfoLabel.Hide();
+
+            generalProgressBar = new InfoProgressBar(5, 424, 593, 26);
+            generalProgressBar.setVisible(true);
+
+            this.Controls.Add(generalProgressBar.getProgressBar());
         }
         /*-------------------------------------------------------------------*/
 
@@ -75,7 +92,6 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="e"></param>
         private void synchronizeButtonClick(object sender, EventArgs e)
         {
-
             String[] fileNameArray = sourcePathTextBox.Text.Split('\\');
 
             if (synchronizeButton.Text == "Synchronize")
@@ -209,6 +225,14 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="e"></param>
         private void analyzeButtonClick(object sender, EventArgs e)
         {
+            //Prevents deactivation of analysis button if no host were selected.
+            if (manualHostTextBox.Text != "" || roomComboBox.Text != "")
+            {
+                //Prevents an overflow of analysis.
+                analyzeButton.Enabled = false;
+                usableAnalyzieButton = false;
+            }
+
             //Empties the hostPanel
             hostPanelContainer.Controls.Clear();
 
@@ -217,6 +241,12 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             SourceHost.setSourcePath(sourcePathTextBox.Text);
 
             updateSourceInfoLabel(sourcePathTextBox.Text);
+
+            //Clear the text in the general progress bar.
+            generalProgressBar.getProgressBar().Refresh();
+
+            //Write the correct information.
+            generalProgressBar.setLabel(generalProgressBar.getLabel(), sourceInfoLabel.Text);
 
             if (analyzable)
             {
@@ -288,9 +318,10 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 {
                     foreach (String hostName in manualHost)
                     {
+                        //condition where visually blacks inputs exist, we don't want them.
                         if (hostName != "" && hostName != "\r")
                         {
-                            //Condition allowing both "\\INF-N511-09" and "INF-N511-09" to be accepted
+                            //Condition allowing both "\\INF-N511-09" and "INF-N511-09" spellings to be accepted
                             if (hostName.Substring(0, 2) == "\\\\")
                             {
                                 targetHostList.Add(new TargetHost(hostName, "Pinging...", hostIndex));
@@ -317,7 +348,6 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
                 startUpdateThreads();
             }
-
             analyzable = false;
         }
         /*-----------------------------------------------------------------------------*/
@@ -334,7 +364,13 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             //Updating the checkbox
             targetHostList[(int)index].setSyncCheckBoxState(targetHostList[(int)index].getSyncCheckBox());
 
+            //Updates the Synced state of very host
             analyzeSyncedState(targetHostList[(int)index]);
+
+            if (Program.Form.usableAnalyzieButton)
+            {
+                Program.Form.enableButton(Program.Form.analyzeButton);
+            }
         }
         /*-----------------------------------------------------------------------------*/
 
@@ -358,8 +394,16 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 thread.Name = targetHostList[startIndex].getTargetHostName();
                 
                 updateThreadList.Add(thread);
-                
-                updateThreadList[startIndex].Start(startIndex);
+
+                while (!updateThreadList[startIndex].IsAlive)
+                {
+                    updateThreadList[startIndex].Start(startIndex);
+                }
+
+                if (startIndex == targetHostList.Count - 1)
+                {
+                    Program.Form.usableAnalyzieButton = true;
+                }
             }
         }
         /*-----------------------------------------------------------------------------------------*/
@@ -371,13 +415,20 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         {
             for (int index = 0; index < updateThreadList.Count; index++)
             {
+                //Stops the threads then deletes them
                 if (updateThreadList[index].IsAlive)
                 {
                     updateThreadList[index].Join();
 
                     updateThreadList[index] = null;
                 }
+                else//Deletes non-running threads
+                {
+                    updateThreadList[index] = null;
+                }
             }
+
+            //Empties the threadList.
             updateThreadList.Clear();
         }
         /*--------------------------------------------------------------------------------*/
@@ -412,26 +463,27 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
             stopSynchronization = false;
 
-            if(SourceHost.compareExisting("file", targetPath))
+            //Case transfer concernes a file
+            if (SourceHost.compareExisting("file", targetPath))
             {
                 FileInfo targetFile = new FileInfo(targetPath);
                 FileInfo sourceFile = new FileInfo(SourceHost.getSourcePath());
 
                 //Verify that both paths lead to a same type of file
-
                 if (targetFile.Extension == sourceFile.Extension)
                 {
-                    if (targetFile.Length < sourceFile.Length || targetFile.LastWriteTime < sourceFile.LastWriteTime)
+                    //if the target was created before last update of source you need to sync
+                    if (targetFile.Length < sourceFile.Length || targetFile.CreationTime < sourceFile.LastWriteTime)
                     {
                         target.setInfoProgressBarLabel("Need sync: " +
                                 SourceHost.formatSizeInteger(targetFile.Length) + " " +
-                                targetFile.LastWriteTime);
+                                targetFile.CreationTime);
                     }
                     else
                     {
                         target.setInfoProgressBarLabel("Synced: " +
                                 SourceHost.formatSizeInteger(targetFile.Length) + " " +
-                                targetFile.LastWriteTime);
+                                targetFile.CreationTime);
                     }
                 }
                 //Error in the destination and source paths, they don't match to a same type of object.
@@ -444,6 +496,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             }
             else
             {
+                //Case transfer concernes a directory
                 if(SourceHost.compareExisting("directory", targetPath))
                 {
                     DirectoryInfo targetDirectory = new DirectoryInfo(targetPath);
@@ -451,19 +504,19 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
                     if (targetDirectory.Extension == sourceDirectory.Extension)
                     {
-
+                        //if the target was created before last update of source you need to sync
                         if (SourceHost.calculateDirectorySize(targetDirectory) < SourceHost.calculateDirectorySize(sourceDirectory)
-                            || targetDirectory.LastWriteTime < sourceDirectory.LastWriteTime)
+                            || targetDirectory.CreationTime < sourceDirectory.LastWriteTime)
                         {
                             target.setInfoProgressBarLabel("Need sync: " +
                                 SourceHost.formatSizeInteger(SourceHost.calculateDirectorySize(targetDirectory)) + " " +
-                                targetDirectory.LastWriteTime);
+                                targetDirectory.CreationTime);
                         }
                         else
                         {
                             target.setInfoProgressBarLabel("Synced: " +
                                 SourceHost.formatSizeInteger(SourceHost.calculateDirectorySize(targetDirectory)) + " " +
-                                targetDirectory.LastWriteTime);
+                                targetDirectory.CreationTime);
                         }
                     }
                     //Error in the destination and source paths, they don't match to a same type of object.
@@ -496,6 +549,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="sourcePath">Path of source being shown in the label</param>
         private void updateSourceInfoLabel(String sourcePath)
         {
+            //Case source is a file.
             if (File.Exists(sourcePath))
             {
                 FileInfo sourceFile = new FileInfo(sourcePath);
@@ -508,6 +562,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             }
             else
             {
+                //Case source is a file.
                 if (Directory.Exists(sourcePath))
                 {
                     DirectoryInfo sourceDirectory = new DirectoryInfo(sourcePath);
@@ -518,6 +573,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
                     analyzable = true;
                 }
+                //Case source doesn't exist.
                 else
                 {
                     analyzable = false;
@@ -591,6 +647,23 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             logTextBox.AppendText(additionnalText);
         }
         /*----------------------------------------------*/
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="button"></param>
+        public void enableButton(Control button)
+        {
+            if (!button.InvokeRequired)
+            {
+                button.Enabled = true;
+            }
+            else
+            {
+                button.Invoke(new crossThreadAnalizeButtonEnabler(enableButton), new object[] { button });
+            }
+        }
+        /*---------------------------------------------------------------------------------------*/
         #endregion
 
     }

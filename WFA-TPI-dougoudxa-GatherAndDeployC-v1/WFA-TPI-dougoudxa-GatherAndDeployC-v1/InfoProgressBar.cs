@@ -44,12 +44,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <summary>
         /// 
         /// </summary>
-        private String infoOutput = null;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private float purcentage = 0;
+        private float percentage = 0;
 
         public delegate void crossThreadSyncState(Control Label, String newText); 
 
@@ -69,12 +64,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
             syncBar.Location = new System.Drawing.Point(xPosition, yPosition);
             syncBar.Size = new System.Drawing.Size(xLength, yLength);
-            syncBar.SendToBack();
 
             syncBarLabel.Location = new System.Drawing.Point(xPosition + 2, yPosition + 1);
             syncBarLabel.Size = new System.Drawing.Size(xLength-2, 13);
-            syncBarLabel.BringToFront();
-            syncBarLabel.Show();
         }
         /*---------------------------------------------------*/
 
@@ -127,6 +119,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             if (!Label.InvokeRequired)
             {
                 Label.Text = newText;
+
+                syncBar.CreateGraphics().DrawString(Label.Text, new System.Drawing.Font("Microsoft sanserif", (float)8.25, System.Drawing.FontStyle.Regular)
+                , System.Drawing.Brushes.Black, new System.Drawing.Point(2, 1));
             }
             else
             {

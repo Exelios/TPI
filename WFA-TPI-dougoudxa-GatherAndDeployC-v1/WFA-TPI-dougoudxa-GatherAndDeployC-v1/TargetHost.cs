@@ -144,14 +144,13 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
             //Adding InforProgressBar
             updateBar = new InfoProgressBar(0, 29, PANEL_WIDTH - 1, 17);
-            updateBar.setVisible(false);
+            updateBar.setVisible(true);
 
             //Adding the controls in the panel
             hostPanel.Controls.Add(hostNameLabel);
             hostPanel.Controls.Add(hostStatusLabel);
             hostPanel.Controls.Add(syncHostCheckBox);
             hostPanel.Controls.Add(updateBar.getProgressBar());
-            hostPanel.Controls.Add(updateBar.getLabel());
         }
         /*----------------------------------------------------*/
 
