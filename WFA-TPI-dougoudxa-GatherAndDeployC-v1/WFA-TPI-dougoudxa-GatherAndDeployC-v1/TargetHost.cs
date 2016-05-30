@@ -318,7 +318,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="newText"></param>
         public void setInfoProgressBarLabel(String newText)
         {
-            this.updateBar.setLabel(this.updateBar.getLabel(), newText);
+            updateBar.setLabel(updateBar.getLabel(), newText);
         }
 
         #endregion

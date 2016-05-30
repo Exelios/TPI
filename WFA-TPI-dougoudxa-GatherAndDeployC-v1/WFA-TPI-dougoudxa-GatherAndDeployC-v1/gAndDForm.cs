@@ -33,6 +33,16 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// Variable necessary to stop synchronization process.
         /// </summary>
         private static bool stopSynchronization = false;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private Thread syncThread;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private Thread realTimeThread;
         
         /// <summary>
         /// Tells the event methd to add a scroll bar when needed.
@@ -52,13 +62,33 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <summary>
         /// 
         /// </summary>
-        public bool usableAnalyzieButton = true;
+        public bool usableAnalysisButton = true;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="button"></param>
-        private delegate void crossThreadAnalizeButtonEnabler(Control button);
+        private delegate void crossThreadButtonEnabler(Control button, bool state);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="control"></param>
+        private delegate void crossThreadLogUpdater(TextBox log, String text);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="control"></param>
+        /// <param name="Text"></param>
+        private delegate void crossThreadControlTextUpdater(Control control, String Text);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bar"></param>
+        /// <param name="value"></param>
+        private delegate void crossThreadProgressBarUpdater(ProgressBar bar, int value);
         #endregion
 
         #region Class methods
@@ -92,66 +122,128 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="e"></param>
         private void synchronizeButtonClick(object sender, EventArgs e)
         {
-            String[] fileNameArray = sourcePathTextBox.Text.Split('\\');
-
-            if (synchronizeButton.Text == "Synchronize")
+            if (Program.Form.synchronizeButton.Text == "Synchronize")
             {
-                int index = 0;
+                this.analyzeButton.Enabled = false;
+
+                syncThread = new Thread(synchronizeThread);
+                syncThread.Start();
+
+                realTimeThread = new Thread(updateInRealTime);
+                realTimeThread.Start();
                 
-                synchronizeButton.Text = "Interrupt";
-                //stopSynchronization = false;
-
-                //Checks if the source exists
-                bool[] existenceResults = checkExistence(sourcePathTextBox.Text);
-
-                //If the source doesn't exist.
-                if (!existenceResults[0] && !existenceResults[1])
-                {
-                    System.Windows.Forms.MessageBox.Show("No such file or directory.", "Error",
-                        System.Windows.Forms.MessageBoxButtons.OK,
-                        System.Windows.Forms.MessageBoxIcon.Error);
-                }
-                else
-                {
-                    //Shows the deployment message whether it is a file or directory.
-                    if (File.Exists(sourcePathTextBox.Text))
-                    {
-                        logTextBox.AppendText("Deploying file - " + fileNameArray[fileNameArray.Length - 1] + ":" + Environment.NewLine + Environment.NewLine);
-                    }
-                    else
-                    {
-                        logTextBox.AppendText("Deploying directory - " + fileNameArray[fileNameArray.Length - 1] + ":" + Environment.NewLine + Environment.NewLine);
-                    }
-
-                    //Transfers file/directory to every host chosen.
-                    foreach (TargetHost target in targetHostList)
-                    {
-                        if (target.getSyncCheckBoxState())
-                        {
-                            logTextBox.AppendText("    " + targetHostList[index].getTargetHostName() + " syncing... " + Environment.NewLine
-                                + "******************************************************" + Environment.NewLine);
-
-                            synchronize(currentSource, target, existenceResults, index);
-
-                            logTextBox.AppendText(Environment.NewLine + "\tDone " + DateTime.Now.ToShortDateString() + ' ' + DateTime.Now.ToLongTimeString() + Environment.NewLine + Environment.NewLine);
-                        }
-
-                        ++index;
-                    }
-
-                    logTextBox.AppendText("Synchronization finished!" + Environment.NewLine + Environment.NewLine);
-                }
-
-                //stopSynchronization = true;
-                synchronizeButton.Text = "Synchronize";
+                Program.Form.synchronizeButton.Text = "Interrupt";
             }
             else
             {
-                //stopSynchronization = true;
-                synchronizeButton.Text = "Synchronize";
+                this.analyzeButton.Enabled = true;
+
+                syncThread.Abort();
+                Program.Form.synchronizeButton.Text = "Synchronize";
             }
         }
         /*---------------------------------------------------------------*/
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static void synchronizeThread()
+        {
+            String[] fileNameArray = Program.Form.sourcePathTextBox.Text.Split('\\');
+                
+            int index = 0;
+
+            //Checks if the source exists
+            bool[] existenceResults = Program.Form.checkExistence(Program.Form.sourcePathTextBox.Text);
+
+            //If the source doesn't exist.
+            if (!existenceResults[0] && !existenceResults[1])
+            {
+                System.Windows.Forms.MessageBox.Show("No such file or directory.", "Error",
+                    System.Windows.Forms.MessageBoxButtons.OK,
+                    System.Windows.Forms.MessageBoxIcon.Error);
+            }
+            else
+            {
+                //Shows the deployment message whether it is a file or directory.
+                if (File.Exists(Program.Form.sourcePathTextBox.Text))
+                {
+                    Program.Form.updateLogText(Program.Form.logTextBox, "Deploying file - " + 
+                        fileNameArray[fileNameArray.Length - 1] + ":" + Environment.NewLine + Environment.NewLine);
+                }
+                else
+                {
+                    Program.Form.updateLogText(Program.Form.logTextBox, "Deploying directory - " + 
+                        fileNameArray[fileNameArray.Length - 1] + ":" + Environment.NewLine + Environment.NewLine);
+                }
+
+                //Transfers file/directory to every host chosen.
+                foreach (TargetHost target in targetHostList)
+                {
+                    if (target.getSyncCheckBoxState())
+                    {
+                        Program.Form.updateLogText(Program.Form.logTextBox, 
+                            "    " + targetHostList[index].getTargetHostName() + 
+                            " syncing... " + Environment.NewLine
+                            + "******************************************************" + Environment.NewLine);
+
+                        Program.Form.synchronize(currentSource, target, existenceResults, index);
+
+                        Program.Form.updateLogText(Program.Form.logTextBox, 
+                            Environment.NewLine + "\tDone " + DateTime.Now.ToShortDateString() +
+                           ' ' + DateTime.Now.ToLongTimeString() + Environment.NewLine + Environment.NewLine);
+                    }
+
+                    ++index;
+                }
+
+                Program.Form.updateLogText(Program.Form.logTextBox, 
+                    "Synchronization finished!" + Environment.NewLine + Environment.NewLine);
+            }
+
+            Program.Form.updateControlText(Program.Form.synchronizeButton,"Synchronize");
+
+            if (Program.Form.synchronizeButton.Text == "Synchronize")
+            {
+                Program.Form.enableButton(Program.Form.analyzeButton, true);
+            }
+        }
+        /*---------------------------------------------------------------------------------------------------------------------*/
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="log"></param>
+        /// <param name="text"></param>
+        public void updateLogText(TextBox log, String text)
+        {
+            if (!log.InvokeRequired)
+            {
+                log.AppendText(text);
+            }
+            else
+            {
+                log.Invoke(new crossThreadLogUpdater(updateLogText), new object[] { log, text });
+            }
+        }
+        /*---------------------------------------------------------------------------------------*/
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="control"></param>
+        /// <param name="text"></param>
+        public void updateControlText(Control control, String text)
+        {
+            if (!control.InvokeRequired)
+            {
+                control.Text = text;
+            }
+            else
+            {
+                control.Invoke(new crossThreadControlTextUpdater(updateControlText), new object[] { control, text });
+            }
+        }
 
         /// <summary>
         /// Method diffrenciating a file from a directory.
@@ -230,7 +322,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             {
                 //Prevents an overflow of analysis.
                 analyzeButton.Enabled = false;
-                usableAnalyzieButton = false;
+                usableAnalysisButton = false;
             }
 
             //Empties the hostPanel
@@ -262,6 +354,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 //Retrieves all the manual hosts typed in.
                 if (manualHostTextBox.Text != "")
                 {
+                    //index of unwanted substring in string
                     int index = 0;
                     String[] tempArray = manualHostTextBox.Text.Split('\n');
 
@@ -367,9 +460,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             //Updates the Synced state of very host
             analyzeSyncedState(targetHostList[(int)index]);
 
-            if (Program.Form.usableAnalyzieButton)
+            if (Program.Form.usableAnalysisButton)
             {
-                Program.Form.enableButton(Program.Form.analyzeButton);
+                Program.Form.enableButton(Program.Form.analyzeButton, true);
             }
         }
         /*-----------------------------------------------------------------------------*/
@@ -392,7 +485,11 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 //Spencer Ruport's answer led to this solution.
                 Thread thread = new Thread(updateTargets);
                 thread.Name = targetHostList[startIndex].getTargetHostName();
+
+                Thread thread2 = new Thread(updateInRealTime);
+                thread2.Name = targetHostList[startIndex].getTargetHostName() + "-bar";
                 
+
                 updateThreadList.Add(thread);
 
                 while (!updateThreadList[startIndex].IsAlive)
@@ -402,7 +499,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
                 if (startIndex == targetHostList.Count - 1)
                 {
-                    Program.Form.usableAnalyzieButton = true;
+                    Program.Form.usableAnalysisButton = true;
                 }
             }
         }
@@ -461,7 +558,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         {
             String targetPath = target.getTargetPath();
 
-            stopSynchronization = false;
+            //stopSynchronization = false;
 
             //Case transfer concernes a file
             if (SourceHost.compareExisting("file", targetPath))
@@ -491,7 +588,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 {
                     System.Windows.Forms.MessageBox.Show("Extension mismatch", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                    stopSynchronization = true;
+                    //stopSynchronization = true;
                 }
             }
             else
@@ -524,7 +621,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                     {
                         System.Windows.Forms.MessageBox.Show("Source or target isn't a directory", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                        stopSynchronization = true;
+                        //stopSynchronization = true;
                     }
                 }
                 else
@@ -644,7 +741,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="additionnalText">appended text to log</param>
         public void appendLogTextBox(String additionnalText)
         {
-            logTextBox.AppendText(additionnalText);
+            Program.Form.updateLogText(Program.Form.logTextBox, additionnalText);
         }
         /*----------------------------------------------*/
 
@@ -652,18 +749,105 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// 
         /// </summary>
         /// <param name="button"></param>
-        public void enableButton(Control button)
+        public void enableButton(Control button, bool state)
         {
             if (!button.InvokeRequired)
             {
-                button.Enabled = true;
+                button.Enabled = state;
             }
             else
             {
-                button.Invoke(new crossThreadAnalizeButtonEnabler(enableButton), new object[] { button });
+                button.Invoke(new crossThreadButtonEnabler(enableButton), new object[] { button, state });
             }
         }
         /*---------------------------------------------------------------------------------------*/
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="targetHost"></param>
+        /// <returns></returns>
+        private double calculateTransferedAmount(TargetHost targetHost)
+        {
+            return getTransferSize(targetHost.getTargetPath()) / getTransferSize(sourcePathTextBox.Text);
+        }
+        /*-------------------------------------------------------------------------------*/
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static void updateInRealTime()
+        {
+            int syncingHosts = 0;
+
+            //long dataLength = 0;
+            while (!stopSynchronization)
+            {
+                foreach (TargetHost target in targetHostList)
+                {
+                    if (target.getSyncCheckBoxState())
+                    {
+                        ++syncingHosts;
+
+                        Thread.Sleep(1000);
+
+                        updateProgressBar(target.getInfoProgressBar().getProgressBar(),
+                            100 * Convert.ToInt32(Program.Form.calculateTransferedAmount(target)));
+                    }
+                }
+            }
+
+            //dataLength = syncingHosts * getTransferSize(Program.Form.sourcePathTextBox.Text);
+        }
+        /*-----------------------------------------------------------------------------------------*/
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private static long getTransferSize(String path)
+        {
+            if (path != "")
+            {
+                //source is a file
+                if (File.Exists(path))
+                {
+                    FileInfo source = new FileInfo(path);
+
+                    return source.Length;
+                }
+                else   //source is a directory.
+                {
+                    DirectoryInfo source = new DirectoryInfo(path);
+
+                    return SourceHost.calculateDirectorySize(source);
+                }
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        /*------------------------------------------------------------*/
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bar"></param>
+        /// <param name="value"></param>
+        private static void updateProgressBar(ProgressBar bar, int value)
+        {
+            if (!bar.InvokeRequired)
+            {
+                bar.Value = value;
+            }
+            else
+            {
+                bar.Invoke(new crossThreadProgressBarUpdater(updateProgressBar), new object[] { bar, value });
+            }
+        }
+        /*-----------------------------------------------------------------------------------------------------*/
         #endregion
 
     }

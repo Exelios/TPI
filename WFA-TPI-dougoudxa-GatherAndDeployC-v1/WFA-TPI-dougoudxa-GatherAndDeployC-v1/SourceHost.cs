@@ -73,10 +73,14 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="copySubdirectories"></param>
         private static void copyDirectory(String sourceDirectoryPath, String TargetDirectoryPath, bool copySubdirectories)
         {
+            //Checking if the directory has been created.
+            bool directoryCreated = false;
+
             // Get the subdirectories for the specified directory.
             DirectoryInfo dir = new DirectoryInfo(sourceDirectoryPath);
 
             DirectoryInfo[] dirs = dir.GetDirectories();
+
             // If the destination directory doesn't exist, create it.
             if (!Directory.Exists(TargetDirectoryPath))
             {
@@ -84,6 +88,14 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 gAndDForm.currentSource.sendLogEntry("Creating: " + Environment.NewLine + TargetDirectoryPath);
 
                 Directory.CreateDirectory(TargetDirectoryPath);
+
+                directoryCreated = true;
+            }
+            else
+            {
+                //Directory.Delete(TargetDirectoryPath, true);
+
+                //directoryCreated = false;
             }
 
             // Get the files in the directory and copy them to the new location.
@@ -120,6 +132,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <returns></returns>
         public static long calculateDirectorySize(DirectoryInfo directory)
         {
+            System.Threading.Thread.Sleep(500);
             long directorySize = 0;
 
             // Add file sizes.
@@ -146,13 +159,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="targetPath">Target object place containing target name in pole position</param>
         public void share(String sourcePath, String targetPath, bool[] existenceResults)
         {
-            System.Windows.Forms.DialogResult result;
-
             String[] targetName = targetPath.Split('\\');
-
-            String targetSize = null;
-
-            DateTime targetLastWriteTime;
 
             //Case where it's not a directory or the directory doesn't exist.
             if(!existenceResults[1])
