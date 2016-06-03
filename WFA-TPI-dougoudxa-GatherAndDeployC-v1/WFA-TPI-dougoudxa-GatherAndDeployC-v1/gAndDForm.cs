@@ -139,6 +139,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 this.analyzeButton.Enabled = true;
 
                 syncThread.Abort();
+
+                updateLogText(this.logTextBox, Environment.NewLine + "Synchronization interrupted" + Environment.NewLine + Environment.NewLine);
+
                 Program.Form.synchronizeButton.Text = "Synchronize";
             }
         }

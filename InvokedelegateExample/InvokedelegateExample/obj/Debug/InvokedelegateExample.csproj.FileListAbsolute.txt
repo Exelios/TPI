@@ -1,0 +1,9 @@
+D:\GitHubRep\TPI\InvokedelegateExample\InvokedelegateExample\bin\Debug\InvokedelegateExample.exe.config
+D:\GitHubRep\TPI\InvokedelegateExample\InvokedelegateExample\bin\Debug\InvokedelegateExample.exe
+D:\GitHubRep\TPI\InvokedelegateExample\InvokedelegateExample\bin\Debug\InvokedelegateExample.pdb
+D:\GitHubRep\TPI\InvokedelegateExample\InvokedelegateExample\obj\Debug\InvokedelegateExample.csprojResolveAssemblyReference.cache
+D:\GitHubRep\TPI\InvokedelegateExample\InvokedelegateExample\obj\Debug\InvokedelegateExample.Form1.resources
+D:\GitHubRep\TPI\InvokedelegateExample\InvokedelegateExample\obj\Debug\InvokedelegateExample.Properties.Resources.resources
+D:\GitHubRep\TPI\InvokedelegateExample\InvokedelegateExample\obj\Debug\InvokedelegateExample.csproj.GenerateResource.Cache
+D:\GitHubRep\TPI\InvokedelegateExample\InvokedelegateExample\obj\Debug\InvokedelegateExample.exe
+D:\GitHubRep\TPI\InvokedelegateExample\InvokedelegateExample\obj\Debug\InvokedelegateExample.pdb

@@ -36,6 +36,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(gAndDForm));
             this.sourcePathLabel = new System.Windows.Forms.Label();
             this.sourcePathTextBox = new System.Windows.Forms.TextBox();
             this.targetPathLabel = new System.Windows.Forms.Label();
@@ -225,9 +226,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.Controls.Add(this.sourcePathLabel);
             this.Controls.Add(this.sourcePathTextBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "gAndDForm";
-            this.ShowIcon = false;
             this.Text = "GatherAndDeployC#";
             this.ResumeLayout(false);
             this.PerformLayout();

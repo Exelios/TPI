@@ -6,3 +6,6 @@ F:\TPI\CopySimple\CopySimple\obj\Debug\CopySimple.Properties.Resources.resources
 F:\TPI\CopySimple\CopySimple\obj\Debug\CopySimple.csproj.GenerateResource.Cache
 F:\TPI\CopySimple\CopySimple\obj\Debug\CopySimple.exe
 F:\TPI\CopySimple\CopySimple\obj\Debug\CopySimple.pdb
+D:\GitHubRep\TPI\CopySimple\CopySimple\bin\Debug\CopySimple.exe.config
+D:\GitHubRep\TPI\CopySimple\CopySimple\obj\Debug\CopySimple.exe
+D:\GitHubRep\TPI\CopySimple\CopySimple\obj\Debug\CopySimple.pdb
