@@ -129,8 +129,8 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 syncThread = new Thread(synchronizeThread);
                 syncThread.Start();
 
-                realTimeThread = new Thread(updateInRealTime);
-                realTimeThread.Start();
+                //realTimeThread = new Thread(updateInRealTime);
+                //realTimeThread.Start();
                 
                 Program.Form.synchronizeButton.Text = "Interrupt";
             }
