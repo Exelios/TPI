@@ -60,7 +60,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         private CheckBox syncHostCheckBox = new CheckBox();
 
         /// <summary>
-        /// 
+        /// Not yet fully operationnal
         /// </summary>
         private InfoProgressBar updateBar;
 
@@ -243,9 +243,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*--------------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Gets the target path inputted in a host.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>host path</returns>
         public String getTargetPath()
         {
             return hostPath;
@@ -303,9 +303,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*-------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Get the InfoProgressBar of TArgetHost instance
         /// </summary>
-        /// <returns></returns>
+        /// <returns>InfoProgressBar</returns>
         public InfoProgressBar getInfoProgressBar()
         {
             return updateBar;
@@ -313,9 +313,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*----------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Sets instances InfoProgressBar's label text to new text.
         /// </summary>
-        /// <param name="newText"></param>
+        /// <param name="newText">New text</param>
         public void setInfoProgressBarLabel(String newText)
         {
             updateBar.setLabel(updateBar.getLabel(), newText);

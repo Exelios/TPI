@@ -1,4 +1,12 @@
-﻿using System;
+﻿/// ETML - TPI
+/// Author: Xavier Dougoud
+/// Date:   27.05.2016
+/// 
+/// Modification: 
+/// 
+/// Summary:    Class managing progression outputs.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,40 +20,40 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         #region Class attributes
 
         /// <summary>
-        /// 
+        /// ProgressBar
         /// </summary>
         private ProgressBar syncBar = new ProgressBar();
 
         /// <summary>
-        /// 
+        /// ProgressBar x position
         /// </summary>
         private int xPosition;
 
         /// <summary>
-        /// 
+        /// ProgressBar y position
         /// </summary>
         private int yPosition;
 
         /// <summary>
-        /// 
+        /// ProgressBar width
         /// </summary>
         private int xLength;
 
         /// <summary>
-        /// 
+        /// ProgressBar height
         /// </summary>
         private int yLength;
 
         /// <summary>
-        /// 
+        /// Label containing information text
         /// </summary>
         private Label syncBarLabel = new Label();
-
+        
         /// <summary>
-        /// 
+        /// Delegate allowing cross thread modifications
         /// </summary>
-        private float percentage = 0;
-
+        /// <param name="Label">Control needing modification</param>
+        /// <param name="newText">Modification</param>
         public delegate void crossThreadSyncState(Control Label, String newText); 
 
         #endregion
@@ -53,7 +61,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         #region Class methods
 
         /// <summary>
-        /// 
+        /// Constructor of the InfoProgressBar class
         /// </summary>
         public InfoProgressBar(int posX, int posY, int sizeX, int sizeY)
         {
@@ -71,9 +79,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*---------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Tells if the Progress of InfoProgressBar instance is shown or not.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True means visible, otherwise false.</returns>
         public bool isVisible()
         {
             return syncBar.Visible;
@@ -81,9 +89,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*-------------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Sets Visibility of ProgressBar form instance of InfoProgressBar
         /// </summary>
-        /// <param name="newVisibility"></param>
+        /// <param name="newVisibility">True shows the ProgressBar, else false.</param>
         public void setVisible(bool newVisibility)
         {
             syncBar.Visible = newVisibility;
@@ -91,9 +99,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*--------------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Gets the ProgressBar of an InfoProgressBar
         /// </summary>
-        /// <returns></returns>
+        /// <returns>ProgressBar of InfoProgressBar</returns>
         public ProgressBar getProgressBar()
         {
             return syncBar;
@@ -101,9 +109,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*--------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Gets the label of an InfoProgressBar
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Label of InfoProgressBar</returns>
         public Label getLabel()
         {
             return syncBarLabel;
@@ -111,9 +119,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*----------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Writes text in progress bar
         /// </summary>
-        /// <param name="newText"></param>
+        /// <param name="newText">Text to be shown</param>
         public void setLabel(Control Label, String newText)
         {
             if (!Label.InvokeRequired)

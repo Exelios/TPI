@@ -1,4 +1,12 @@
-﻿using System;
+﻿/// ETML - TPI
+/// Author: Xavier Dougoud
+/// Date:   11.05.2016
+/// 
+/// Modification: 
+/// 
+/// Summary:    Class managing every interaction with user.
+
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
@@ -25,7 +33,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         public static SourceHost currentSource = new SourceHost();
 
         /// <summary>
-        /// 
+        /// Give general progression status
         /// </summary>
         private InfoProgressBar generalProgressBar;
 
@@ -35,15 +43,10 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         private static bool stopSynchronization = false;
 
         /// <summary>
-        /// 
+        /// Thread syncing the hosts
         /// </summary>
         private Thread syncThread;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private Thread realTimeThread;
-        
+                
         /// <summary>
         /// Tells the event methd to add a scroll bar when needed.
         /// </summary>
@@ -60,35 +63,44 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         private bool analyzable;
 
         /// <summary>
-        /// 
+        /// Variable used to activate or disable the analyzeButton
         /// </summary>
         public bool usableAnalysisButton = true;
 
         /// <summary>
-        /// 
+        /// Cross thread delegate enabling buttons
         /// </summary>
-        /// <param name="button"></param>
+        /// <param name="button">Button to be enabled</param>
+        /// <param name="state">True enables the button, otherwise false</param>
         private delegate void crossThreadButtonEnabler(Control button, bool state);
 
         /// <summary>
-        /// 
+        ///  Cross thread delegate updating log
         /// </summary>
-        /// <param name="control"></param>
+        /// <param name="log">Log TextBox</param>
+        /// <param name="text">text to be appended</param>
         private delegate void crossThreadLogUpdater(TextBox log, String text);
 
         /// <summary>
-        /// 
+        /// Cross thread delegate updating control texts
         /// </summary>
-        /// <param name="control"></param>
-        /// <param name="Text"></param>
+        /// <param name="control">Control to be updated</param>
+        /// <param name="Text">New text</param>
         private delegate void crossThreadControlTextUpdater(Control control, String Text);
 
         /// <summary>
-        /// 
+        /// Cross thread bar updater
         /// </summary>
-        /// <param name="bar"></param>
-        /// <param name="value"></param>
+        /// <param name="bar">ProgressBar to be updated</param>
+        /// <param name="value">New value</param>
         private delegate void crossThreadProgressBarUpdater(ProgressBar bar, int value);
+
+        /// <summary>
+        /// Cross thread CheckBox enabler
+        /// </summary>
+        /// <param name="box">CheckBox to be enabled</param>
+        /// <param name="state">True enables the CheckBox, otherwise false</param>
+        private delegate void crossThreadEnableCheckBox(CheckBox box, bool state);
         #endregion
 
         #region Class methods
@@ -133,6 +145,8 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 //realTimeThread.Start();
                 
                 Program.Form.synchronizeButton.Text = "Interrupt";
+
+                stopSynchronization = false;
             }
             else
             {
@@ -140,7 +154,11 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
                 syncThread.Abort();
 
+                syncThread = null;
+
                 updateLogText(this.logTextBox, Environment.NewLine + "Synchronization interrupted" + Environment.NewLine + Environment.NewLine);
+
+
 
                 Program.Form.synchronizeButton.Text = "Synchronize";
             }
@@ -180,11 +198,42 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                         fileNameArray[fileNameArray.Length - 1] + ":" + Environment.NewLine + Environment.NewLine);
                 }
 
-                //Transfers file/directory to every host chosen.
-                foreach (TargetHost target in targetHostList)
+                //Stopwatch to time sync to one host
+                System.Diagnostics.Stopwatch timeAmount = new System.Diagnostics.Stopwatch();
+
+                //Number of syncing hosts.
+                int syncingHosts = 0;
+
+                String sourceInfo = Program.Form.sourceInfoLabel.Text;
+
+                //Syncing host amount
+                foreach(TargetHost target in targetHostList)
                 {
                     if (target.getSyncCheckBoxState())
                     {
+                        ++syncingHosts;
+                    }
+                }
+
+                int totalHosts = syncingHosts;
+
+                //Transfers file/directory to every host chosen.
+                foreach (TargetHost target in targetHostList)
+                {
+                    if(index == 0)
+                    {
+                        timeAmount.Start();
+                    }
+
+                    if (target.getSyncCheckBoxState())
+                    {
+                       
+
+                        if (Directory.Exists(target.getTargetHostName() + Program.Form.targetPathTextBox.Text.Substring(2)))
+                            {
+                                 Directory.Delete(target.getTargetHostName() + Program.Form.targetPathTextBox.Text.Substring(2), true);
+                            }
+
                         Program.Form.updateLogText(Program.Form.logTextBox, 
                             "    " + targetHostList[index].getTargetHostName() + 
                             " syncing... " + Environment.NewLine
@@ -195,13 +244,42 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                         Program.Form.updateLogText(Program.Form.logTextBox, 
                             Environment.NewLine + "\tDone " + DateTime.Now.ToShortDateString() +
                            ' ' + DateTime.Now.ToLongTimeString() + Environment.NewLine + Environment.NewLine);
+
+                        //One host less to sync
+                        --syncingHosts;
                     }
+
+                    int transferTime = 0;
+
+                    if (timeAmount.IsRunning)
+                    {
+                        timeAmount.Stop();
+
+                        transferTime = (int)timeAmount.Elapsed.TotalSeconds;
+                    }
+
+                    transferTime = (int)timeAmount.Elapsed.TotalSeconds * syncingHosts;
+
+                    Program.Form.generalProgressBar.getProgressBar().Refresh();
+
+                    //Not functionnal
+                    //updateProgressBar(Program.Form.generalProgressBar.getProgressBar(),
+                    //  (totalHosts - syncingHosts) * 100 / totalHosts);
+
+                    Program.Form.generalProgressBar.setLabel(
+                        Program.Form.generalProgressBar.getLabel(),
+                        "Sync progress : " + (totalHosts - syncingHosts) * 100 / totalHosts  + "%  -  " +  
+                        "Time left : " + Convert.ToString(transferTime) + " seconds.");
+
 
                     ++index;
                 }
 
                 Program.Form.updateLogText(Program.Form.logTextBox, 
                     "Synchronization finished!" + Environment.NewLine + Environment.NewLine);
+
+                //Allows user to save the log.
+                Program.Form.enableButton(Program.Form.logSaveButton, true);
             }
 
             Program.Form.updateControlText(Program.Form.synchronizeButton,"Synchronize");
@@ -320,6 +398,13 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="e"></param>
         private void analyzeButtonClick(object sender, EventArgs e)
         {
+            //If the synchronize button has already been enabled form previous sync
+            if (synchronizeButton.Enabled == true || logSaveButton.Enabled == true)
+            {
+                synchronizeButton.Enabled = false;
+                logSaveButton.Enabled = false;
+            }
+
             //Prevents deactivation of analysis button if no host were selected.
             if (manualHostTextBox.Text != "" || roomComboBox.Text != "")
             {
@@ -412,31 +497,57 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 //Assignes all the manual hosts.
                 if (!manualHostEmpty)
                 {
+                    List<TargetHost> tempList = new List<TargetHost>();
+
+                    foreach (TargetHost target in targetHostList)
+                    {
+                        // Copy the current content of the target host list.
+                        tempList.Add(target);
+                    }
+                    
+
                     foreach (String hostName in manualHost)
                     {
-                        //condition where visually blacks inputs exist, we don't want them.
-                        if (hostName != "" && hostName != "\r")
+                        //Boolean of existance status used below.
+                        bool alreadyExists = false;
+
+                        //Verifiey if a host had already been added by the room selection process.
+                        foreach(TargetHost target in tempList)
                         {
-                            //Condition allowing both "\\INF-N511-09" and "INF-N511-09" spellings to be accepted
-                            if (hostName.Substring(0, 2) == "\\\\")
+                            if (hostName == target.getTargetHostName().Split('\\')[2])
                             {
-                                targetHostList.Add(new TargetHost(hostName, "Pinging...", hostIndex));
-
-                                targetHostList[hostIndex].setTargetPath(targetHostList[hostIndex].getTargetHostName() + targetPathTextBox.Text.Substring(2));
-
-                                hostPanelContainer.Controls.Add(targetHostList[hostIndex].getTargetHostPanel());
-
-                                ++hostIndex;
+                                alreadyExists = true;
+                                break;
                             }
-                            else
+                        }
+
+
+                        if(!alreadyExists)
+                        {
+                            //condition where visually blacks inputs exist, we don't want them.
+                            if (hostName != "" && hostName != "\r")
                             {
-                                targetHostList.Add(new TargetHost("\\\\" + hostName, "Pinging...", hostIndex));
+                                //Condition allowing both "\\INF-N511-09" and "INF-N511-09" spellings to be accepted
+                                if (hostName.Substring(0, 2) == "\\\\")
+                                {
+                                    targetHostList.Add(new TargetHost(hostName, "Pinging...", hostIndex));
 
-                                targetHostList[hostIndex].setTargetPath(targetHostList[hostIndex].getTargetHostName() + targetPathTextBox.Text.Substring(2));
+                                    targetHostList[hostIndex].setTargetPath(targetHostList[hostIndex].getTargetHostName() + targetPathTextBox.Text.Substring(2));
 
-                                hostPanelContainer.Controls.Add(targetHostList[hostIndex].getTargetHostPanel());
+                                    hostPanelContainer.Controls.Add(targetHostList[hostIndex].getTargetHostPanel());
 
-                                ++hostIndex;
+                                    ++hostIndex;
+                                }
+                                else
+                                {
+                                    targetHostList.Add(new TargetHost("\\\\" + hostName, "Pinging...", hostIndex));
+
+                                    targetHostList[hostIndex].setTargetPath(targetHostList[hostIndex].getTargetHostName() + targetPathTextBox.Text.Substring(2));
+
+                                    hostPanelContainer.Controls.Add(targetHostList[hostIndex].getTargetHostPanel());
+
+                                    ++hostIndex;
+                                }
                             }
                         }
                     }
@@ -444,6 +555,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
 
                 startUpdateThreads();
             }
+            //Allows to use the synchronizeButton.
+            synchronizeButton.Enabled = true;
+
             analyzable = false;
         }
         /*-----------------------------------------------------------------------------*/
@@ -457,11 +571,20 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             //Updating the status
             NetworkConfig.updateTargetStatus(targetHostList[(int)index]);
 
-            //Updating the checkbox
-            targetHostList[(int)index].setSyncCheckBoxState(targetHostList[(int)index].getSyncCheckBox());
+            if(targetHostList[(int)index].getHostStatus().Split(' ')[0] != NetworkConfig.connectionStatusArray[0])
+            {
+                enableCheckBox(targetHostList[(int)index].getSyncCheckBox(), false);
+            }
 
             //Updates the Synced state of very host
             analyzeSyncedState(targetHostList[(int)index]);
+
+
+            if (targetHostList[(int)index].getInfoProgressBar().getLabel().Text.Split(':')[0] == "Need sync")
+            {
+                //Updating the checkbox
+                targetHostList[(int)index].setSyncCheckBoxState(targetHostList[(int)index].getSyncCheckBox());
+            }          
 
             if (Program.Form.usableAnalysisButton)
             {
@@ -488,10 +611,6 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 //Spencer Ruport's answer led to this solution.
                 Thread thread = new Thread(updateTargets);
                 thread.Name = targetHostList[startIndex].getTargetHostName();
-
-                Thread thread2 = new Thread(updateInRealTime);
-                thread2.Name = targetHostList[startIndex].getTargetHostName() + "-bar";
-                
 
                 updateThreadList.Add(thread);
 
@@ -679,6 +798,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                     analyzable = false;
 
                     System.Windows.Forms.MessageBox.Show("No such file or directory.", "Source Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    //Incase source doesn't exist reactivates the analyze button
+                    Program.Form.enableButton(Program.Form.analyzeButton, true);
                 }
             }
         }
@@ -705,7 +827,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         private void logSaveButtonClick(object sender, EventArgs e)
         {
             String logFilePath = "C:\\Users\\" + (String)Environment.UserName + "\\Desktop\\g&d_log_" + 
-               DateTime.Now.ToShortDateString() + '_' + DateTime.Now.ToLongTimeString().Replace(':','-') + ".txt";
+               DateTime.Now.ToShortDateString() + '_' + DateTime.Now.ToLongTimeString().Replace(':','.') + ".txt";
 
             FileStream stream = new FileStream(logFilePath, FileMode.Create);
 
@@ -749,9 +871,10 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*----------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Method that enables or disables a button
         /// </summary>
-        /// <param name="button"></param>
+        /// <param name="button">Button to be activated</param>
+        /// <param name="state">True will enable the button</param>
         public void enableButton(Control button, bool state)
         {
             if (!button.InvokeRequired)
@@ -766,7 +889,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*---------------------------------------------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Not operationnal
         /// </summary>
         /// <param name="targetHost"></param>
         /// <returns></returns>
@@ -777,13 +900,13 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*-------------------------------------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Not operationnal
         /// </summary>
         private static void updateInRealTime()
         {
             int syncingHosts = 0;
 
-            //long dataLength = 0;
+            long dataLength = 0;
             while (!stopSynchronization)
             {
                 foreach (TargetHost target in targetHostList)
@@ -792,7 +915,9 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                     {
                         ++syncingHosts;
 
-                        Thread.Sleep(1000);
+
+
+                        //Thread.Sleep(1000);
 
                         updateProgressBar(target.getInfoProgressBar().getProgressBar(),
                             100 * Convert.ToInt32(Program.Form.calculateTransferedAmount(target)));
@@ -805,7 +930,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*-----------------------------------------------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Not operationnal
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
@@ -835,10 +960,10 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /*------------------------------------------------------------*/
 
         /// <summary>
-        /// 
+        /// Sets progress bar value.
         /// </summary>
-        /// <param name="bar"></param>
-        /// <param name="value"></param>
+        /// <param name="bar">Needs a value change</param>
+        /// <param name="value">New value</param>
         private static void updateProgressBar(ProgressBar bar, int value)
         {
             if (!bar.InvokeRequired)
@@ -851,6 +976,23 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             }
         }
         /*-----------------------------------------------------------------------------------------------------*/
+
+        /// <summary>
+        /// Enables or disables a CheckBox
+        /// </summary>
+        /// <param name="box">Checkbox going to be modified</param>
+        /// <param name="state">True enables the CheckBox</param>
+        private static void enableCheckBox(CheckBox box, bool state)
+        {
+            if (!box.InvokeRequired)
+            {
+                box.Enabled = state;
+            }
+            else
+            {
+                box.Invoke(new crossThreadEnableCheckBox(enableCheckBox), new object[] { box, state });
+            }
+        }
         #endregion
 
     }

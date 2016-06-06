@@ -71,7 +71,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             this.sourcePathTextBox.Name = "sourcePathTextBox";
             this.sourcePathTextBox.Size = new System.Drawing.Size(505, 20);
             this.sourcePathTextBox.TabIndex = 1;
-            this.sourcePathTextBox.Text = "C:\\Users\\Win10Rsync\\Desktop\\test";
+            this.sourcePathTextBox.Text = "F:\\PBS-SpaceTime";
             // 
             // targetPathLabel
             // 
@@ -103,6 +103,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             // 
             // synchronizeButton
             // 
+            this.synchronizeButton.Enabled = false;
             this.synchronizeButton.Location = new System.Drawing.Point(197, 463);
             this.synchronizeButton.Name = "synchronizeButton";
             this.synchronizeButton.Size = new System.Drawing.Size(75, 23);
@@ -187,6 +188,7 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
             // 
             // logSaveButton
             // 
+            this.logSaveButton.Enabled = false;
             this.logSaveButton.Location = new System.Drawing.Point(440, 463);
             this.logSaveButton.Name = "logSaveButton";
             this.logSaveButton.Size = new System.Drawing.Size(75, 23);

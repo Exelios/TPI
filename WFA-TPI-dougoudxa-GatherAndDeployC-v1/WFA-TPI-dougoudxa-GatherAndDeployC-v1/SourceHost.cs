@@ -73,9 +73,6 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
         /// <param name="copySubdirectories"></param>
         private static void copyDirectory(String sourceDirectoryPath, String TargetDirectoryPath, bool copySubdirectories)
         {
-            //Checking if the directory has been created.
-            bool directoryCreated = false;
-
             // Get the subdirectories for the specified directory.
             DirectoryInfo dir = new DirectoryInfo(sourceDirectoryPath);
 
@@ -88,18 +85,11 @@ namespace WFA_TPI_dougoudxa_GatherAndDeployC_v1
                 gAndDForm.currentSource.sendLogEntry("Creating: " + Environment.NewLine + TargetDirectoryPath);
 
                 Directory.CreateDirectory(TargetDirectoryPath);
-
-                directoryCreated = true;
-            }
-            else
-            {
-                //Directory.Delete(TargetDirectoryPath, true);
-
-                //directoryCreated = false;
             }
 
             // Get the files in the directory and copy them to the new location.
             FileInfo[] files = dir.GetFiles();
+
             foreach (FileInfo file in files)
             {
                 String tempPath = Path.Combine(TargetDirectoryPath, file.Name);
